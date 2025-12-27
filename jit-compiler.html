@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JIT编译优化</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="i18n.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -134,13 +135,54 @@
             color: white;
             font-weight: bold;
         }
+    
+        /* 言語切り替えボタンのスタイル */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #language-selector {
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        #language-selector:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        #language-selector option {
+            background: #764ba2;
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <!-- 言語切り替え -->
+    <div class="language-switcher">
+        <select id="language-selector" onchange="window.langSwitcher.changeLanguage(this.value)">
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+
     <div class="container">
         <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
         <div class="header animate__animated animate__fadeInDown">
-            <h1>⚡ JIT编译优化</h1>
+            <h1>⚡ <span data-i18n="jitTitle">JIT编译优化</span></h1>
             <p>即时编译器的魔法 - 让Java飞起来</p>
         </div>
         <div class="control-panel animate__animated animate__fadeIn">
