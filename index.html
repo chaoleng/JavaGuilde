@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java虚拟机可视化系列</title>
+
+    <!-- External CSS Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- Multi-language Support -->
     <script src="i18n.js"></script>
+
     <style>
+        /* ========================================
+           Global Reset & Base Styles
+           ======================================== */
         * {
             margin: 0;
             padding: 0;
@@ -20,11 +28,17 @@
             padding: 20px;
         }
 
+        /* ========================================
+           Layout & Container
+           ======================================== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
 
+        /* ========================================
+           Header Section
+           ======================================== */
         header {
             text-align: center;
             color: white;
@@ -43,6 +57,9 @@
             opacity: 0.95;
         }
 
+        /* ========================================
+           Cards Grid Layout
+           ======================================== */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -50,6 +67,9 @@
             margin-bottom: 50px;
         }
 
+        /* ========================================
+           Card Component Styles
+           ======================================== */
         .card {
             background: white;
             border-radius: 20px;
@@ -113,6 +133,7 @@
             font-size: 0.85em;
         }
 
+        /* Status Badge */
         .status-badge {
             position: absolute;
             top: 20px;
@@ -129,18 +150,7 @@
             background: #f1fa8c;
         }
 
-        footer {
-            text-align: center;
-            color: white;
-            padding: 30px;
-            margin-top: 50px;
-        }
-
-        footer p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
+        /* Difficulty Rating */
         .difficulty {
             display: inline-block;
             margin-top: 10px;
@@ -153,6 +163,24 @@
             margin-left: 5px;
         }
 
+        /* ========================================
+           Footer Section
+           ======================================== */
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        footer p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* ========================================
+           Responsive Design - Mobile
+           ======================================== */
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2em;
@@ -167,7 +195,9 @@
             }
         }
 
-        /* 装饰性粒子背景 */
+        /* ========================================
+           Decorative Particles Animation
+           ======================================== */
         .particle {
             position: fixed;
             width: 10px;
@@ -188,7 +218,9 @@
             }
         }
 
-        /* 言語切り替えボタンのスタイル */
+        /* ========================================
+           Language Switcher Component
+           ======================================== */
         .language-switcher {
             position: fixed;
             top: 20px;
@@ -221,7 +253,9 @@
     </style>
 </head>
 <body>
-    <!-- 言語切り替え -->
+    <!-- ========================================
+         Language Switcher
+         ======================================== -->
     <div class="language-switcher">
         <select id="language-selector" onchange="window.langSwitcher.changeLanguage(this.value)">
             <option value="zh">中文</option>
@@ -230,13 +264,18 @@
         </select>
     </div>
 
-    <!-- 装饰性粒子 -->
+    <!-- ========================================
+         Decorative Particles Background
+         ======================================== -->
     <div class="particle" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
     <div class="particle" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
     <div class="particle" style="top: 70%; left: 15%; animation-delay: 2s;"></div>
     <div class="particle" style="top: 80%; left: 75%; animation-delay: 3s;"></div>
     <div class="particle" style="top: 40%; left: 90%; animation-delay: 1.5s;"></div>
 
+    <!-- ========================================
+         Main Content Container
+         ======================================== -->
     <div class="container">
         <header class="animate__animated animate__fadeInDown">
             <h1>☕ <span data-i18n="indexTitle">Java虚拟机可视化系列</span></h1>
@@ -368,10 +407,18 @@
     </div>
 
     <script>
-        // 为卡片添加点击涟漪效果
+        /**
+         * ========================================
+         * Card Ripple Effect
+         * ========================================
+         * Adds an interactive ripple animation when cards are clicked
+         */
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function(e) {
+                // Create ripple element
                 const ripple = document.createElement('div');
+
+                // Style the ripple
                 ripple.style.position = 'absolute';
                 ripple.style.borderRadius = '50%';
                 ripple.style.background = 'rgba(102, 126, 234, 0.3)';
@@ -382,13 +429,20 @@
                 ripple.style.animation = 'ripple 0.6s ease-out';
                 ripple.style.pointerEvents = 'none';
 
+                // Add ripple to card
                 this.appendChild(ripple);
 
+                // Remove ripple after animation
                 setTimeout(() => ripple.remove(), 600);
             });
         });
 
-        // 添加涟漪动画
+        /**
+         * ========================================
+         * Ripple Animation Keyframes
+         * ========================================
+         * Dynamically inject CSS animation for ripple effect
+         */
         const style = document.createElement('style');
         style.textContent = `
             @keyframes ripple {
