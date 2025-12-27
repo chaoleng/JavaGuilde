@@ -1,9 +1,11 @@
 # ☕ Java虚拟机可视化系列
 
+**[中文](README.md) | [日本語](README.ja.md) | [English](README.en.md)**
+
 > 通过交互式动画深入理解JVM运行机制
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-brightgreen)](https://yourusername.github.io/jvm-visualization-series/)
+[![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-brightgreen)](https://chaoleng.github.io/JavaGuilde/)
 
 ## 📖 项目简介
 
@@ -17,6 +19,7 @@
 - 🎓 **循序渐进** - 从基础到高级，系统学习 JVM
 - 💡 **实用示例** - 配有语法高亮的 Java 代码示例
 - 🚀 **零依赖部署** - 纯静态页面，可直接部署到 GitHub Pages
+- 🌐 **多语言支持** - 支持中文、日语、英语三种语言
 
 ## 📚 内容目录
 
@@ -73,14 +76,14 @@
 
 ### 在线访问
 
-访问演示地址：[https://yourusername.github.io/jvm-visualization-series/](https://yourusername.github.io/jvm-visualization-series/)
+访问演示地址：[https://chaoleng.github.io/JavaGuilde/](https://chaoleng.github.io/JavaGuilde/)
 
 ### 本地运行
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/yourusername/jvm-visualization-series.git
-cd jvm-visualization-series
+git clone https://github.com/chaoleng/JavaGuilde.git
+cd JavaGuilde
 ```
 
 2. **直接打开**
@@ -113,7 +116,10 @@ jvm-visualization-series/
 ├── garbage-collection.html    # 垃圾回收算法
 ├── jit-compiler.html          # JIT编译优化
 ├── concurrency.html           # 多线程与并发
-├── README.md                  # 项目文档
+├── i18n.js                    # 多语言支持
+├── README.md                  # 项目文档（中文）
+├── README.ja.md               # 项目文档（日语）
+├── README.en.md               # 项目文档（英语）
 └── LICENSE                    # 开源协议
 ```
 
@@ -123,6 +129,15 @@ jvm-visualization-series/
 - **CSS3** - 样式与布局
 - **JavaScript (ES6+)** - 交互逻辑
 - **[Animate.css](https://animate.style/)** - 动画效果库
+
+## 🌐 多语言支持
+
+本项目支持以下语言：
+- 🇨🇳 中文（简体）
+- 🇯🇵 日语
+- 🇬🇧 英语
+
+可以通过每个页面右上角的语言选择按钮切换语言。首次访问时，会根据浏览器的语言设置自动选择适当的语言。
 
 ## 📸 预览截图
 
@@ -140,11 +155,11 @@ jvm-visualization-series/
 
 ## 📝 待办事项
 
+- [x] 添加多语言支持（中文、日语、英语）
 - [ ] 添加更多交互式示例
 - [ ] 增加字节码指令详解页面
 - [ ] 添加性能调优实战案例
 - [ ] 支持暗色主题切换
-- [ ] 添加英文版本
 - [ ] 增加搜索功能
 
 ## 📄 许可证
@@ -161,15 +176,12 @@ jvm-visualization-series/
 
 如果你有任何问题或建议，欢迎通过以下方式联系：
 
-- 提交 [Issue](https://github.com/yourusername/jvm-visualization-series/issues)
-- 发送邮件至：your.email@example.com
+- 提交 [Issue](https://github.com/chaoleng/JavaGuilde/issues)
 
 ## ⭐ Star History
 
 如果这个项目对你有帮助，请给个 Star ⭐️
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/jvm-visualization-series&type=Date)](https://star-history.com/#yourusername/jvm-visualization-series&Date)
-
 ---
 
-Made with ❤️ by [Your Name](https://github.com/yourusername)
+Made with ❤️ by JVM Enthusiasts
