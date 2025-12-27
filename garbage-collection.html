@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>垃圾回收算法可视化</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d53369 0%, #daae51 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d53369 0%, #daae51 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .gc-algorithms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .algorithm-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(213, 51, 105, 0.3);
+        }
+
+        .algorithm-card.active {
+            border-color: #d53369;
+            background: linear-gradient(135deg, #ffeef4 0%, #fff9ee 100%);
+        }
+
+        .algorithm-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .algorithm-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 内存可视化区域 */
+        .memory-visualization {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .memory-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+
+        .memory-cell.empty {
+            background: #e9ecef;
+            color: #adb5bd;
+        }
+
+        .memory-cell.alive {
+            background: linear-gradient(135deg, #40c463 0%, #30a14e 100%);
+            color: white;
+        }
+
+        .memory-cell.dead {
+            background: linear-gradient(135deg, #f85149 0%, #da3633 100%);
+            color: white;
+        }
+
+        .memory-cell.marked {
+            background: linear-gradient(135deg, #ffd33d 0%, #eac54f 100%);
+            color: #333;
+            animation: pulse-mark 1s infinite;
+        }
+
+        @keyframes pulse-mark {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+        }
+
+        .generation-view {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .generation-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #d53369;
+        }
+
+        .generation-title {
+            font-weight: bold;
+            color: #d53369;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .keyword { color: #ff79c6; }
+        .type { color: #8be9fd; }
+        .comment { color: #6272a4; }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #d53369;
+        }
+
+        .info-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .collector-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .collector-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .collector-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .collector-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
+
+        <div class="header animate__animated animate__fadeInDown">
+            <h1>🗑️ 垃圾回收算法可视化</h1>
+            <p>深入理解GC算法原理与垃圾收集器</p>
+        </div>
+
+        <div class="control-panel animate__animated animate__fadeIn">
+            <button class="btn" onclick="demonstrateMarkSweep()">🏷️ 标记-清除</button>
+            <button class="btn" onclick="demonstrateCopying()">📋 复制算法</button>
+            <button class="btn" onclick="demonstrateMarkCompact()">📦 标记-整理</button>
+            <button class="btn" onclick="demonstrateGenerational()">🎯 分代收集</button>
+            <button class="btn" onclick="resetVisualization()">🔄 重置</button>
+        </div>
+
+        <div class="main-content animate__animated animate__fadeInUp">
+            <!-- GC算法选择 -->
+            <h2 class="section-title">🎯 垃圾回收算法</h2>
+
+            <div class="gc-algorithms">
+                <div class="algorithm-card" onclick="demonstrateMarkSweep()">
+                    <div class="algorithm-title">🏷️ 标记-清除算法</div>
+                    <div class="algorithm-desc">
+                        <strong>Mark-Sweep</strong><br>
+                        分为"标记"和"清除"两个阶段。首先标记所有可达对象，然后清除未标记对象。
+                        <br><br>
+                        ✅ 简单直接<br>
+                        ❌ 产生内存碎片<br>
+                        ❌ 标记清除效率不高
+                    </div>
+                </div>
+
+                <div class="algorithm-card" onclick="demonstrateCopying()">
+                    <div class="algorithm-title">📋 复制算法</div>
+                    <div class="algorithm-desc">
+                        <strong>Copying</strong><br>
+                        将内存分为两块，每次只使用一块。GC时将存活对象复制到另一块，清空当前块。
+                        <br><br>
+                        ✅ 无内存碎片<br>
+                        ✅ 效率高<br>
+                        ❌ 浪费50%内存
+                    </div>
+                </div>
+
+                <div class="algorithm-card" onclick="demonstrateMarkCompact()">
+                    <div class="algorithm-title">📦 标记-整理算法</div>
+                    <div class="algorithm-desc">
+                        <strong>Mark-Compact</strong><br>
+                        标记后不是直接清除，而是将存活对象向一端移动，然后清理边界外内存。
+                        <br><br>
+                        ✅ 无内存碎片<br>
+                        ✅ 内存利用率高<br>
+                        ❌ 整理过程开销大
+                    </div>
+                </div>
+
+                <div class="algorithm-card" onclick="demonstrateGenerational()">
+                    <div class="algorithm-title">🎯 分代收集算法</div>
+                    <div class="algorithm-desc">
+                        <strong>Generational Collection</strong><br>
+                        根据对象存活周期将内存分为新生代和老年代，针对不同代使用不同算法。
+                        <br><br>
+                        ✅ 综合各算法优点<br>
+                        ✅ 效率最高<br>
+                        ✅ 现代JVM主流方案
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内存可视化 -->
+            <h2 class="section-title" id="visualTitle">💾 内存状态可视化</h2>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color alive"></div>
+                    <span>存活对象</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color dead"></div>
+                    <span>垃圾对象</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color marked"></div>
+                    <span>已标记</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color empty"></div>
+                    <span>空闲内存</span>
+                </div>
+            </div>
+
+            <div class="memory-visualization">
+                <h3 id="memoryTitle" style="text-align: center; margin-bottom: 20px; color: #d53369;">
+                    点击上方按钮查看不同GC算法演示
+                </h3>
+                <div class="memory-grid" id="memoryGrid"></div>
+                <div id="generationView" style="display: none;">
+                    <div class="generation-view">
+                        <div class="generation-box">
+                            <div class="generation-title">新生代 (Young Generation)</div>
+                            <p><strong>Eden区:</strong> 新对象分配</p>
+                            <p><strong>Survivor区:</strong> S0 和 S1</p>
+                            <p><strong>GC类型:</strong> Minor GC</p>
+                            <p><strong>算法:</strong> 复制算法</p>
+                        </div>
+                        <div class="generation-box">
+                            <div class="generation-title">老年代 (Old Generation)</div>
+                            <p><strong>对象来源:</strong> 长期存活对象</p>
+                            <p><strong>GC类型:</strong> Major GC / Full GC</p>
+                            <p><strong>算法:</strong> 标记-清除 或 标记-整理</p>
+                            <p><strong>触发条件:</strong> 老年代空间不足</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 垃圾收集器对比 -->
+            <h2 class="section-title">🔧 主流垃圾收集器</h2>
+
+            <div class="collector-comparison">
+                <div class="collector-card">
+                    <h3>Serial GC</h3>
+                    <p>单线程收集器</p>
+                    <p>适用于单CPU环境</p>
+                    <p>客户端模式默认</p>
+                </div>
+
+                <div class="collector-card">
+                    <h3>Parallel GC</h3>
+                    <p>多线程收集器</p>
+                    <p>吞吐量优先</p>
+                    <p>服务端模式默认</p>
+                </div>
+
+                <div class="collector-card">
+                    <h3>CMS</h3>
+                    <p>并发标记清除</p>
+                    <p>低延迟优先</p>
+                    <p>老年代收集器</p>
+                </div>
+
+                <div class="collector-card">
+                    <h3>G1 GC</h3>
+                    <p>面向服务端应用</p>
+                    <p>可预测停顿时间</p>
+                    <p>JDK 9+默认</p>
+                </div>
+
+                <div class="collector-card">
+                    <h3>ZGC</h3>
+                    <p>低延迟收集器</p>
+                    <p>停顿时间<10ms</p>
+                    <p>JDK 11+</p>
+                </div>
+
+                <div class="collector-card">
+                    <h3>Shenandoah</h3>
+                    <p>低停顿时间</p>
+                    <p>并发整理</p>
+                    <p>JDK 12+</p>
+                </div>
+            </div>
+
+            <!-- GC参数配置 -->
+            <h2 class="section-title">⚙️ 常用GC参数</h2>
+
+            <div class="code-block">
+<span class="comment"># 选择垃圾收集器</span>
+-XX:+UseSerialGC          <span class="comment">// Serial GC</span>
+-XX:+UseParallelGC        <span class="comment">// Parallel GC</span>
+-XX:+UseConcMarkSweepGC   <span class="comment">// CMS</span>
+-XX:+UseG1GC              <span class="comment">// G1 GC</span>
+-XX:+UseZGC               <span class="comment">// ZGC (JDK 11+)</span>
+
+<span class="comment"># 堆内存设置</span>
+-Xms2g                    <span class="comment">// 初始堆大小</span>
+-Xmx4g                    <span class="comment">// 最大堆大小</span>
+-Xmn1g                    <span class="comment">// 新生代大小</span>
+
+<span class="comment"># GC日志</span>
+-Xlog:gc*:file=gc.log     <span class="comment">// GC日志输出 (JDK 9+)</span>
+-XX:+PrintGCDetails       <span class="comment">// 打印GC详情 (JDK 8)</span>
+
+<span class="comment"># G1 GC调优</span>
+-XX:MaxGCPauseMillis=200  <span class="comment">// 目标停顿时间</span>
+-XX:G1HeapRegionSize=16m  <span class="comment">// Region大小</span>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 GC调优建议：</strong><br>
+                • 优先选择合适的垃圾收集器，而非过度调优参数<br>
+                • 大多数应用使用默认GC配置即可满足需求<br>
+                • 关注GC日志，分析停顿时间和吞吐量<br>
+                • 合理设置堆内存大小，避免频繁Full GC<br>
+                • 新生代和老年代比例通常为 1:2
+            </div>
+
+            <!-- 对象晋升规则 -->
+            <h2 class="section-title">📊 对象晋升到老年代的条件</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="generation-box">
+                    <div class="generation-title">1️⃣ 年龄达到阈值</div>
+                    <p>对象在Survivor区每经历一次Minor GC，年龄+1</p>
+                    <p>默认年龄15晋升到老年代</p>
+                    <p>参数: -XX:MaxTenuringThreshold</p>
+                </div>
+
+                <div class="generation-box">
+                    <div class="generation-title">2️⃣ 大对象直接进入</div>
+                    <p>大对象直接在老年代分配</p>
+                    <p>避免在Eden和Survivor间复制</p>
+                    <p>参数: -XX:PretenureSizeThreshold</p>
+                </div>
+
+                <div class="generation-box">
+                    <div class="generation-title">3️⃣ 动态年龄判断</div>
+                    <p>Survivor中相同年龄对象大小总和</p>
+                    <p>超过Survivor空间一半</p>
+                    <p>该年龄及以上对象晋升老年代</p>
+                </div>
+
+                <div class="generation-box">
+                    <div class="generation-title">4️⃣ 空间分配担保</div>
+                    <p>Minor GC前检查老年代空间</p>
+                    <p>确保晋升对象有足够空间</p>
+                    <p>失败则触发Full GC</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gridSize = 40;
+        let memoryState = [];
+
+        function initializeMemory() {
+            memoryState = Array(gridSize).fill(null).map(() => ({
+                status: Math.random() > 0.5 ? 'alive' : 'dead',
+                marked: false
+            }));
+            renderMemory();
+        }
+
+        function renderMemory() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+
+            memoryState.forEach((cell, index) => {
+                const cellDiv = document.createElement('div');
+                cellDiv.className = `memory-cell ${cell.status}${cell.marked ? ' marked' : ''}`;
+                cellDiv.textContent = index + 1;
+                grid.appendChild(cellDiv);
+            });
+        }
+
+        async function demonstrateMarkSweep() {
+            document.getElementById('memoryTitle').textContent = '标记-清除算法演示';
+            document.getElementById('generationView').style.display = 'none';
+            initializeMemory();
+
+            await sleep(500);
+
+            // 标记阶段
+            for (let i = 0; i < gridSize; i++) {
+                if (memoryState[i].status === 'alive') {
+                    memoryState[i].marked = true;
+                    renderMemory();
+                    await sleep(50);
+                }
+            }
+
+            await sleep(1000);
+
+            // 清除阶段
+            for (let i = 0; i < gridSize; i++) {
+                if (memoryState[i].status === 'dead') {
+                    memoryState[i].status = 'empty';
+                    renderMemory();
+                    await sleep(50);
+                }
+            }
+
+            // 取消标记
+            memoryState.forEach(cell => cell.marked = false);
+            renderMemory();
+        }
+
+        async function demonstrateCopying() {
+            document.getElementById('memoryTitle').textContent = '复制算法演示 (From区 → To区)';
+            document.getElementById('generationView').style.display = 'none';
+            initializeMemory();
+
+            await sleep(500);
+
+            const halfSize = gridSize / 2;
+            const newState = Array(gridSize).fill(null).map(() => ({ status: 'empty', marked: false }));
+
+            let toIndex = halfSize;
+            for (let i = 0; i < halfSize; i++) {
+                if (memoryState[i].status === 'alive') {
+                    newState[toIndex] = { status: 'alive', marked: false };
+                    memoryState[i].marked = true;
+                    renderMemory();
+                    await sleep(100);
+                    toIndex++;
+                }
+            }
+
+            memoryState = newState;
+            renderMemory();
+        }
+
+        async function demonstrateMarkCompact() {
+            document.getElementById('memoryTitle').textContent = '标记-整理算法演示';
+            document.getElementById('generationView').style.display = 'none';
+            initializeMemory();
+
+            await sleep(500);
+
+            // 标记
+            for (let i = 0; i < gridSize; i++) {
+                if (memoryState[i].status === 'alive') {
+                    memoryState[i].marked = true;
+                    renderMemory();
+                    await sleep(50);
+                }
+            }
+
+            await sleep(1000);
+
+            // 整理
+            const compacted = memoryState.filter(cell => cell.status === 'alive')
+                .map(cell => ({ status: 'alive', marked: false }));
+
+            while (compacted.length < gridSize) {
+                compacted.push({ status: 'empty', marked: false });
+            }
+
+            memoryState = compacted;
+            renderMemory();
+        }
+
+        function demonstrateGenerational() {
+            document.getElementById('memoryTitle').textContent = '分代收集算法';
+            document.getElementById('generationView').style.display = 'block';
+
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = 'repeat(15, 1fr)';
+
+            // 新生代
+            for (let i = 0; i < 15; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'memory-cell alive';
+                cell.textContent = i < 9 ? 'E' : (i < 12 ? 'S0' : 'S1');
+                cell.style.background = i < 9 ? 'linear-gradient(135deg, #40c463 0%, #30a14e 100%)' :
+                    'linear-gradient(135deg, #ffd33d 0%, #eac54f 100%)';
+                grid.appendChild(cell);
+            }
+
+            // 老年代
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'memory-cell';
+                cell.textContent = 'Old';
+                cell.style.background = i % 3 === 0 ?
+                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#e9ecef';
+                cell.style.color = i % 3 === 0 ? 'white' : '#adb5bd';
+                grid.appendChild(cell);
+            }
+        }
+
+        function resetVisualization() {
+            document.getElementById('memoryTitle').textContent = '点击上方按钮查看不同GC算法演示';
+            document.getElementById('generationView').style.display = 'none';
+            document.getElementById('memoryGrid').style.gridTemplateColumns = 'repeat(10, 1fr)';
+            initializeMemory();
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        window.addEventListener('load', () => {
+            initializeMemory();
+            setTimeout(() => demonstrateGenerational(), 1000);
+        });
+    </script>
+</body>
+</html>

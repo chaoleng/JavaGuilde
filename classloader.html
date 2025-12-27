@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java类加载机制</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        /* 双亲委派模型 */
+        .classloader-hierarchy {
+            margin: 30px 0;
+        }
+
+        .loader-level {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .loader-box {
+            display: inline-block;
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .loader-box.active {
+            animation: pulse 1.5s infinite;
+        }
+
+        .loader-description {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .arrow-down {
+            text-align: center;
+            font-size: 2em;
+            color: #134e5e;
+            margin: 10px 0;
+        }
+
+        /* 加载流程 */
+        .loading-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .process-step {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .process-step.active {
+            border-color: #71b280;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            transform: scale(1.05);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .step-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* 代码示例 */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .keyword { color: #ff79c6; }
+        .type { color: #8be9fd; }
+        .method { color: #50fa7b; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; }
+
+        /* 委派流程动画 */
+        .delegation-flow {
+            margin: 30px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .flow-step.active {
+            opacity: 1;
+            box-shadow: 0 5px 15px rgba(113, 178, 128, 0.3);
+        }
+
+        .flow-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .flow-content {
+            flex: 1;
+        }
+
+        .flow-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .flow-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* 类加载器对比表 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* 信息框 */
+        .info-box {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .info-box.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .info-box.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .info-box.info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        @media (max-width: 768px) {
+            .loading-process {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            50% {
+                box-shadow: 0 5px 25px rgba(113, 178, 128, 0.6);
+            }
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #71b280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
+
+        <div class="header animate__animated animate__fadeInDown">
+            <h1>📚 Java类加载机制</h1>
+            <p>深入理解双亲委派模型与类加载全过程</p>
+        </div>
+
+        <div class="control-panel animate__animated animate__fadeIn">
+            <button class="btn" onclick="startDemo()">▶️ 演示加载流程</button>
+            <button class="btn" onclick="demonstrateDelegation()">🔄 双亲委派演示</button>
+            <button class="btn" onclick="resetDemo()">🔄 重置</button>
+        </div>
+
+        <div class="main-content animate__animated animate__fadeInUp">
+            <!-- 双亲委派模型 -->
+            <h2 class="section-title">🏗️ 双亲委派模型 (Parent Delegation Model)</h2>
+
+            <div class="classloader-hierarchy" id="hierarchy">
+                <div class="loader-level">
+                    <div class="loader-box" data-loader="bootstrap">
+                        🔝 启动类加载器 (Bootstrap ClassLoader)
+                    </div>
+                    <div class="loader-description">
+                        加载 $JAVA_HOME/lib 下的核心类库 (rt.jar, charsets.jar等)
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="loader-level">
+                    <div class="loader-box" data-loader="extension">
+                        🔧 扩展类加载器 (Extension ClassLoader)
+                    </div>
+                    <div class="loader-description">
+                        加载 $JAVA_HOME/lib/ext 目录下的扩展类库
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="loader-level">
+                    <div class="loader-box" data-loader="application">
+                        📦 应用程序类加载器 (Application ClassLoader)
+                    </div>
+                    <div class="loader-description">
+                        加载应用程序classpath下的类 (默认类加载器)
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="loader-level">
+                    <div class="loader-box" data-loader="custom">
+                        🎨 自定义类加载器 (Custom ClassLoader)
+                    </div>
+                    <div class="loader-description">
+                        用户自定义的类加载器,如Tomcat的WebappClassLoader
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box success">
+                <strong>✅ 双亲委派原则：</strong><br>
+                类加载器收到加载请求时,首先不会自己尝试加载,而是将请求委派给父类加载器。
+                只有当父加载器无法完成加载时,子加载器才会尝试自己加载。
+            </div>
+
+            <!-- 双亲委派流程演示 -->
+            <h2 class="section-title">🔄 双亲委派流程演示</h2>
+
+            <div class="code-block">
+<span class="keyword">package</span> com.example;
+
+<span class="keyword">public class</span> <span class="type">MyClass</span> {
+    <span class="keyword">public static void</span> <span class="method">main</span>(<span class="type">String</span>[] args) {
+        System.out.<span class="method">println</span>(<span class="string">"Hello ClassLoader!"</span>);
+    }
+}
+            </div>
+
+            <div class="delegation-flow" id="delegationFlow">
+                <div class="flow-step" data-step="1">
+                    <div class="flow-icon">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">应用程序类加载器接收请求</div>
+                        <div class="flow-desc">请求加载: com.example.MyClass</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" data-step="2">
+                    <div class="flow-icon">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">委派给扩展类加载器</div>
+                        <div class="flow-desc">应用程序类加载器将请求向上委派</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" data-step="3">
+                    <div class="flow-icon">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">委派给启动类加载器</div>
+                        <div class="flow-desc">扩展类加载器继续向上委派</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" data-step="4">
+                    <div class="flow-icon">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">启动类加载器尝试加载</div>
+                        <div class="flow-desc">在 $JAVA_HOME/lib 下查找,未找到 ❌</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" data-step="5">
+                    <div class="flow-icon">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">扩展类加载器尝试加载</div>
+                        <div class="flow-desc">在 $JAVA_HOME/lib/ext 下查找,未找到 ❌</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" data-step="6">
+                    <div class="flow-icon">6</div>
+                    <div class="flow-content">
+                        <div class="flow-title">应用程序类加载器加载成功</div>
+                        <div class="flow-desc">在 classpath 下找到并加载 MyClass.class ✅</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 类加载全过程 -->
+            <h2 class="section-title">⚙️ 类加载全过程</h2>
+
+            <div class="loading-process" id="loadingProcess">
+                <div class="process-step" data-process="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">加载 (Loading)</div>
+                    <div class="step-desc">
+                        通过类的全限定名获取二进制字节流,
+                        将字节流转化为方法区的数据结构,
+                        在内存中生成Class对象
+                    </div>
+                </div>
+
+                <div class="process-step" data-process="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">验证 (Verification)</div>
+                    <div class="step-desc">
+                        文件格式验证、元数据验证、
+                        字节码验证、符号引用验证,
+                        确保Class文件符合JVM规范
+                    </div>
+                </div>
+
+                <div class="process-step" data-process="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">准备 (Preparation)</div>
+                    <div class="step-desc">
+                        为类变量分配内存并设置初始值
+                        (零值,而非代码中的初始值)
+                        这些变量存储在方法区
+                    </div>
+                </div>
+
+                <div class="process-step" data-process="4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">解析 (Resolution)</div>
+                    <div class="step-desc">
+                        将常量池中的符号引用
+                        替换为直接引用的过程,
+                        如类、字段、方法的引用
+                    </div>
+                </div>
+
+                <div class="process-step" data-process="5">
+                    <div class="step-number">5</div>
+                    <div class="step-title">初始化 (Initialization)</div>
+                    <div class="step-desc">
+                        执行类构造器&lt;clinit&gt;()方法,
+                        真正初始化类变量和静态代码块,
+                        按代码顺序执行
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细示例 -->
+            <h2 class="section-title">💡 类加载详细示例</h2>
+
+            <div class="code-block">
+<span class="keyword">public class</span> <span class="type">LoadingDemo</span> {
+    <span class="keyword">static</span> <span class="type">int</span> a = 100;           <span class="comment">// 准备阶段:a=0, 初始化阶段:a=100</span>
+    <span class="keyword">static final</span> <span class="type">int</span> b = 200;   <span class="comment">// 准备阶段直接:b=200 (常量)</span>
+
+    <span class="keyword">static</span> {
+        System.out.<span class="method">println</span>(<span class="string">"静态代码块执行"</span>);  <span class="comment">// 初始化阶段执行</span>
+        a = 300;
+    }
+
+    <span class="keyword">public static void</span> <span class="method">main</span>(<span class="type">String</span>[] args) {
+        System.out.<span class="method">println</span>(<span class="string">"a = "</span> + a);  <span class="comment">// 输出: a = 300</span>
+    }
+}
+            </div>
+
+            <div class="info-box info">
+                <strong>📌 执行顺序：</strong><br>
+                1. 准备阶段: a = 0, b = 200<br>
+                2. 初始化阶段: 执行静态代码块和静态变量赋值 (a = 100 → a = 300)
+            </div>
+
+            <!-- 类加载器对比 -->
+            <h2 class="section-title">📊 类加载器对比</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>类加载器</th>
+                        <th>加载路径</th>
+                        <th>父加载器</th>
+                        <th>实现语言</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>启动类加载器</strong></td>
+                        <td>$JAVA_HOME/lib (rt.jar等)</td>
+                        <td>null</td>
+                        <td>C++</td>
+                    </tr>
+                    <tr>
+                        <td><strong>扩展类加载器</strong></td>
+                        <td>$JAVA_HOME/lib/ext</td>
+                        <td>启动类加载器</td>
+                        <td>Java</td>
+                    </tr>
+                    <tr>
+                        <td><strong>应用程序类加载器</strong></td>
+                        <td>classpath</td>
+                        <td>扩展类加载器</td>
+                        <td>Java</td>
+                    </tr>
+                    <tr>
+                        <td><strong>自定义类加载器</strong></td>
+                        <td>用户指定</td>
+                        <td>应用程序类加载器</td>
+                        <td>Java</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 双亲委派的好处 -->
+            <h2 class="section-title">✨ 双亲委派模型的优势</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0;">
+                <div class="info-box success">
+                    <strong>🛡️ 防止核心类被篡改</strong><br>
+                    例如自定义的 java.lang.String 无法替代系统的String类,
+                    因为会先由启动类加载器加载系统String
+                </div>
+
+                <div class="info-box success">
+                    <strong>🔒 避免类的重复加载</strong><br>
+                    父加载器已经加载过的类,子加载器不会再次加载,
+                    保证类的唯一性
+                </div>
+
+                <div class="info-box success">
+                    <strong>🎯 保证Java核心API安全</strong><br>
+                    核心类库始终由启动类加载器加载,
+                    确保Java平台的稳定性和安全性
+                </div>
+            </div>
+
+            <!-- 自定义类加载器 -->
+            <h2 class="section-title">🎨 自定义类加载器示例</h2>
+
+            <div class="code-block">
+<span class="keyword">public class</span> <span class="type">MyClassLoader</span> <span class="keyword">extends</span> <span class="type">ClassLoader</span> {
+
+    <span class="keyword">private</span> <span class="type">String</span> classPath;
+
+    <span class="keyword">public</span> <span class="method">MyClassLoader</span>(<span class="type">String</span> classPath) {
+        <span class="keyword">this</span>.classPath = classPath;
+    }
+
+    <span class="comment">// 重写findClass方法</span>
+    <span class="keyword">@Override</span>
+    <span class="keyword">protected</span> <span class="type">Class</span>&lt;?&gt; <span class="method">findClass</span>(<span class="type">String</span> name) <span class="keyword">throws</span> <span class="type">ClassNotFoundException</span> {
+        <span class="keyword">try</span> {
+            <span class="comment">// 1. 读取class文件字节流</span>
+            <span class="type">byte</span>[] classData = <span class="method">loadClassData</span>(name);
+
+            <span class="keyword">if</span> (classData == <span class="keyword">null</span>) {
+                <span class="keyword">throw new</span> <span class="type">ClassNotFoundException</span>();
+            }
+
+            <span class="comment">// 2. 调用defineClass方法将字节流转换为Class对象</span>
+            <span class="keyword">return</span> <span class="method">defineClass</span>(name, classData, 0, classData.length);
+        } <span class="keyword">catch</span> (<span class="type">Exception</span> e) {
+            <span class="keyword">throw new</span> <span class="type">ClassNotFoundException</span>(name);
+        }
+    }
+
+    <span class="keyword">private</span> <span class="type">byte</span>[] <span class="method">loadClassData</span>(<span class="type">String</span> className) {
+        <span class="comment">// 读取class文件的实现...</span>
+        <span class="keyword">return</span> <span class="keyword">null</span>;
+    }
+}
+            </div>
+
+            <div class="info-box warning">
+                <strong>⚠️ 注意事项：</strong><br>
+                • 不推荐重写 loadClass() 方法,这会破坏双亲委派模型<br>
+                • 应该重写 findClass() 方法来实现自定义加载逻辑<br>
+                • Tomcat等容器为了实现热部署会打破双亲委派模型
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let demoInterval = null;
+
+        function startDemo() {
+            resetDemo();
+            const steps = document.querySelectorAll('[data-process]');
+            let index = 0;
+
+            demoInterval = setInterval(() => {
+                if (index < steps.length) {
+                    steps[index].classList.add('active', 'animate__animated', 'animate__bounceIn');
+                    index++;
+                } else {
+                    clearInterval(demoInterval);
+                }
+            }, 800);
+        }
+
+        function demonstrateDelegation() {
+            resetDemo();
+
+            // 高亮类加载器层次
+            const loaders = ['bootstrap', 'extension', 'application', 'custom'];
+            let loaderIndex = 0;
+
+            const loaderInterval = setInterval(() => {
+                document.querySelectorAll('.loader-box').forEach(box => {
+                    box.classList.remove('active');
+                });
+
+                if (loaderIndex < loaders.length) {
+                    document.querySelector(`[data-loader="${loaders[loaderIndex]}"]`).classList.add('active');
+                    loaderIndex++;
+                } else {
+                    clearInterval(loaderInterval);
+                }
+            }, 1000);
+
+            // 委派流程动画
+            const flowSteps = document.querySelectorAll('[data-step]');
+            let stepIndex = 0;
+
+            setTimeout(() => {
+                const flowInterval = setInterval(() => {
+                    if (stepIndex < flowSteps.length) {
+                        flowSteps[stepIndex].classList.add('active', 'animate__animated', 'animate__fadeInLeft');
+                        stepIndex++;
+                    } else {
+                        clearInterval(flowInterval);
+                    }
+                }, 600);
+            }, loaders.length * 1000);
+        }
+
+        function resetDemo() {
+            clearInterval(demoInterval);
+
+            document.querySelectorAll('.loader-box').forEach(box => {
+                box.classList.remove('active');
+            });
+
+            document.querySelectorAll('.process-step').forEach(step => {
+                step.classList.remove('active', 'animate__animated', 'animate__bounceIn');
+            });
+
+            document.querySelectorAll('.flow-step').forEach(step => {
+                step.classList.remove('active', 'animate__animated', 'animate__fadeInLeft');
+            });
+        }
+
+        // 页面加载后自动演示
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                demonstrateDelegation();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

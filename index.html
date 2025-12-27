@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java虚拟机可视化系列</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.05em;
+            margin-bottom: 20px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #50fa7b;
+            color: #1e1e1e;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-badge.coming-soon {
+            background: #f1fa8c;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        footer p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .difficulty {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .difficulty-stars {
+            color: #ffd700;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1.1em;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 装饰性粒子背景 */
+        .particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 装饰性粒子 -->
+    <div class="particle" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 70%; left: 15%; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 80%; left: 75%; animation-delay: 3s;"></div>
+    <div class="particle" style="top: 40%; left: 90%; animation-delay: 1.5s;"></div>
+
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>☕ Java虚拟机可视化系列</h1>
+            <p>深入理解JVM运行机制 · 交互式动画教程</p>
+        </header>
+
+        <div class="cards-grid">
+            <!-- 卡片1: JVM运行过程 -->
+            <a href="jvm-process.html" class="card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <span class="status-badge">已完成</span>
+                <div class="card-icon">🚀</div>
+                <h2 class="card-title">JVM运行过程</h2>
+                <p class="card-description">
+                    从源代码到程序执行的完整流程，包括编译、类加载、内存分配、字节码执行和垃圾回收全过程。
+                </p>
+                <div class="card-tags">
+                    <span class="tag">编译</span>
+                    <span class="tag">类加载</span>
+                    <span class="tag">执行引擎</span>
+                    <span class="tag">GC</span>
+                </div>
+                <div class="difficulty">
+                    难度: <span class="difficulty-stars">⭐⭐</span>
+                </div>
+            </a>
+
+            <!-- 卡片2: JVM内存模型 -->
+            <a href="jvm-memory.html" class="card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <span class="status-badge">已完成</span>
+                <div class="card-icon">🧠</div>
+                <h2 class="card-title">JVM内存模型详解</h2>
+                <p class="card-description">
+                    深入探索堆、栈、方法区等内存区域，可视化展示对象创建、方法调用和内存分配的全过程。
+                </p>
+                <div class="card-tags">
+                    <span class="tag">堆内存</span>
+                    <span class="tag">栈帧</span>
+                    <span class="tag">方法区</span>
+                    <span class="tag">对象分配</span>
+                </div>
+                <div class="difficulty">
+                    难度: <span class="difficulty-stars">⭐⭐⭐</span>
+                </div>
+            </a>
+
+            <!-- 卡片3: 类加载机制 -->
+            <a href="classloader.html" class="card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                <span class="status-badge">已完成</span>
+                <div class="card-icon">📚</div>
+                <h2 class="card-title">类加载机制</h2>
+                <p class="card-description">
+                    详解双亲委派模型、类加载器层次结构，以及加载、验证、准备、解析、初始化的完整过程。
+                </p>
+                <div class="card-tags">
+                    <span class="tag">双亲委派</span>
+                    <span class="tag">类加载器</span>
+                    <span class="tag">链接</span>
+                    <span class="tag">初始化</span>
+                </div>
+                <div class="difficulty">
+                    难度: <span class="difficulty-stars">⭐⭐⭐</span>
+                </div>
+            </a>
+
+            <!-- 卡片4: 垃圾回收算法 -->
+            <a href="garbage-collection.html" class="card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                <span class="status-badge">已完成</span>
+                <div class="card-icon">🗑️</div>
+                <h2 class="card-title">垃圾回收算法</h2>
+                <p class="card-description">
+                    动画展示标记清除、复制算法、标记整理、分代收集等GC算法，以及各种垃圾收集器的工作原理。
+                </p>
+                <div class="card-tags">
+                    <span class="tag">GC算法</span>
+                    <span class="tag">分代收集</span>
+                    <span class="tag">G1收集器</span>
+                    <span class="tag">ZGC</span>
+                </div>
+                <div class="difficulty">
+                    难度: <span class="difficulty-stars">⭐⭐⭐⭐</span>
+                </div>
+            </a>
+
+            <!-- 卡片5: JIT编译优化 -->
+            <a href="jit-compiler.html" class="card animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+                <span class="status-badge">已完成</span>
+                <div class="card-icon">⚡</div>
+                <h2 class="card-title">JIT编译优化</h2>
+                <p class="card-description">
+                    探索即时编译器如何识别热点代码、执行内联优化、逃逸分析等高级优化技术。
+                </p>
+                <div class="card-tags">
+                    <span class="tag">热点检测</span>
+                    <span class="tag">内联优化</span>
+                    <span class="tag">逃逸分析</span>
+                    <span class="tag">C1/C2编译器</span>
+                </div>
+                <div class="difficulty">
+                    难度: <span class="difficulty-stars">⭐⭐⭐⭐</span>
+                </div>
+            </a>
+
+            <!-- 卡片6: 多线程与并发 -->
+            <a href="concurrency.html" class="card animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+                <span class="status-badge">已完成</span>
+                <div class="card-icon">🔀</div>
+                <h2 class="card-title">多线程与并发</h2>
+                <p class="card-description">
+                    可视化线程状态转换、同步机制、锁优化、volatile原理和Java内存模型(JMM)。
+                </p>
+                <div class="card-tags">
+                    <span class="tag">线程状态</span>
+                    <span class="tag">synchronized</span>
+                    <span class="tag">volatile</span>
+                    <span class="tag">JMM</span>
+                </div>
+                <div class="difficulty">
+                    难度: <span class="difficulty-stars">⭐⭐⭐⭐⭐</span>
+                </div>
+            </a>
+        </div>
+
+        <footer class="animate__animated animate__fadeIn" style="animation-delay: 0.8s;">
+            <p>💡 通过交互式动画，让JVM不再抽象</p>
+            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;">
+                使用 Animate.css + 原生 JavaScript 构建
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 为卡片添加点击涟漪效果
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(102, 126, 234, 0.3)';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.left = e.offsetX - 10 + 'px';
+                ripple.style.top = e.offsetY - 10 + 'px';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                ripple.style.pointerEvents = 'none';
+
+                this.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // 添加涟漪动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(20);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java虚拟机运行过程可视化</title>
+    <!-- Animate.css CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            margin: 0 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .jvm-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        /* 流程阶段样式 */
+        .stage {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 15px;
+            background: #f8f9fa;
+            position: relative;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+
+        .stage.active {
+            opacity: 1;
+            background: linear-gradient(135deg, #e0f7fa 0%, #e1bee7 100%);
+        }
+
+        .stage-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stage-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .stage-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 组件样式 */
+        .component {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: inline-block;
+            min-width: 150px;
+            text-align: center;
+            position: relative;
+        }
+
+        .component-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .component-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        /* 箭头样式 */
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        /* 代码块样式 */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .code-keyword {
+            color: #ff79c6;
+        }
+
+        .code-class {
+            color: #8be9fd;
+        }
+
+        .code-method {
+            color: #50fa7b;
+        }
+
+        .code-string {
+            color: #f1fa8c;
+        }
+
+        /* 内存区域样式 */
+        .memory-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .memory-block {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .memory-block h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .memory-block p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* 数据流动画 */
+        .data-flow {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 执行引擎动画 */
+        .engine-animation {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .engine-part {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 120px;
+        }
+
+        /* 进度指示器 */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .stage-content {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+
+        /* 闪烁动画 */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(102, 126, 234, 0.8);
+            }
+        }
+
+        .active .data-flow {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="animate__animated animate__fadeInDown">☕ Java虚拟机运行过程可视化</h1>
+
+        <div class="control-panel">
+            <button class="btn animate__animated animate__fadeIn" onclick="startJVM()">▶️ 启动JVM演示</button>
+            <button class="btn animate__animated animate__fadeIn" onclick="resetJVM()">🔄 重置</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="jvm-container">
+            <!-- 阶段1: 源代码 -->
+            <div class="stage" id="stage1">
+                <div class="stage-title">
+                    <span class="stage-number">1</span>
+                    源代码编写
+                </div>
+                <div class="stage-content">
+                    <div class="code-block">
+<span class="code-keyword">public class</span> <span class="code-class">HelloWorld</span> {
+    <span class="code-keyword">public static void</span> <span class="code-method">main</span>(String[] args) {
+        System.out.<span class="code-method">println</span>(<span class="code-string">"Hello, JVM!"</span>);
+    }
+}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段2: 编译 -->
+            <div class="stage" id="stage2">
+                <div class="stage-title">
+                    <span class="stage-number">2</span>
+                    javac 编译器编译
+                </div>
+                <div class="stage-content">
+                    <div class="component">
+                        <div class="component-title">📄 HelloWorld.java</div>
+                        <div class="component-desc">源代码文件</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">⚙️ javac</div>
+                        <div class="component-desc">编译器</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">📦 HelloWorld.class</div>
+                        <div class="component-desc">字节码文件</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段3: 类加载 -->
+            <div class="stage" id="stage3">
+                <div class="stage-title">
+                    <span class="stage-number">3</span>
+                    类加载子系统
+                </div>
+                <div class="stage-content">
+                    <div class="component">
+                        <div class="component-title">📥 加载 (Loading)</div>
+                        <div class="component-desc">读取字节码</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">🔗 链接 (Linking)</div>
+                        <div class="component-desc">验证、准备、解析</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">🎯 初始化 (Initialization)</div>
+                        <div class="component-desc">执行静态代码块</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段4: 运行时数据区 -->
+            <div class="stage" id="stage4">
+                <div class="stage-title">
+                    <span class="stage-number">4</span>
+                    运行时数据区
+                </div>
+                <div class="memory-area">
+                    <div class="memory-block">
+                        <h3>📚 方法区</h3>
+                        <p>存储类信息、常量、静态变量</p>
+                    </div>
+                    <div class="memory-block">
+                        <h3>🗂️ 堆</h3>
+                        <p>存储对象实例和数组</p>
+                    </div>
+                    <div class="memory-block">
+                        <h3>📋 虚拟机栈</h3>
+                        <p>存储局部变量、方法调用</p>
+                    </div>
+                    <div class="memory-block">
+                        <h3>🧮 程序计数器</h3>
+                        <p>记录当前执行指令地址</p>
+                    </div>
+                    <div class="memory-block">
+                        <h3>🔧 本地方法栈</h3>
+                        <p>支持Native方法执行</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段5: 执行引擎 -->
+            <div class="stage" id="stage5">
+                <div class="stage-title">
+                    <span class="stage-number">5</span>
+                    执行引擎
+                </div>
+                <div class="stage-content">
+                    <div class="engine-animation">
+                        <div class="engine-part">
+                            <div class="component-title">🔍 解释器</div>
+                            <div class="component-desc">逐行解释字节码</div>
+                        </div>
+                        <div class="engine-part">
+                            <div class="component-title">⚡ JIT编译器</div>
+                            <div class="component-desc">热点代码优化</div>
+                        </div>
+                        <div class="engine-part">
+                            <div class="component-title">🗑️ 垃圾回收器</div>
+                            <div class="component-desc">自动内存管理</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段6: 字节码执行 -->
+            <div class="stage" id="stage6">
+                <div class="stage-title">
+                    <span class="stage-number">6</span>
+                    字节码执行
+                </div>
+                <div class="stage-content">
+                    <div class="component">
+                        <div class="component-title">1️⃣ 加载常量</div>
+                        <div class="component-desc">ldc "Hello, JVM!"</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">2️⃣ 调用方法</div>
+                        <div class="component-desc">invokevirtual println</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">3️⃣ 返回结果</div>
+                        <div class="component-desc">return</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段7: 输出结果 -->
+            <div class="stage" id="stage7">
+                <div class="stage-title">
+                    <span class="stage-number">7</span>
+                    程序输出
+                </div>
+                <div class="stage-content">
+                    <div class="code-block" style="background: #1e1e1e; font-size: 1.2em; text-align: center;">
+                        <span style="color: #50fa7b;">Hello, JVM!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 阶段8: GC垃圾回收 -->
+            <div class="stage" id="stage8">
+                <div class="stage-title">
+                    <span class="stage-number">8</span>
+                    垃圾回收机制
+                </div>
+                <div class="stage-content">
+                    <div class="component">
+                        <div class="component-title">🔍 标记阶段</div>
+                        <div class="component-desc">标记可达对象</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">🧹 清除阶段</div>
+                        <div class="component-desc">回收垃圾对象</div>
+                    </div>
+                    <span class="arrow">→</span>
+                    <div class="component">
+                        <div class="component-title">📦 整理阶段</div>
+                        <div class="component-desc">内存碎片整理</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStage = 0;
+        const totalStages = 8;
+        let animationTimeout;
+
+        function startJVM() {
+            resetJVM();
+            animateStages();
+        }
+
+        function resetJVM() {
+            clearTimeout(animationTimeout);
+            currentStage = 0;
+
+            // 重置所有阶段
+            for (let i = 1; i <= totalStages; i++) {
+                const stage = document.getElementById(`stage${i}`);
+                stage.classList.remove('active', 'animate__animated', 'animate__fadeInLeft',
+                    'animate__bounceIn', 'animate__zoomIn', 'animate__slideInUp');
+            }
+
+            // 重置进度条
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        function animateStages() {
+            if (currentStage >= totalStages) {
+                return;
+            }
+
+            currentStage++;
+            const stage = document.getElementById(`stage${currentStage}`);
+
+            // 更新进度条
+            const progress = (currentStage / totalStages) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // 激活当前阶段
+            stage.classList.add('active');
+
+            // 为不同阶段添加不同的动画效果
+            const animations = [
+                'animate__fadeInLeft',
+                'animate__fadeInRight',
+                'animate__bounceIn',
+                'animate__zoomIn',
+                'animate__slideInUp',
+                'animate__fadeInUp',
+                'animate__bounceIn',
+                'animate__zoomIn'
+            ];
+
+            stage.classList.add('animate__animated', animations[currentStage - 1]);
+
+            // 根据不同阶段设置不同的延迟时间
+            const delays = [2000, 2500, 3000, 3500, 3000, 2500, 2000, 3000];
+
+            animationTimeout = setTimeout(() => {
+                animateStages();
+            }, delays[currentStage - 1]);
+        }
+
+        // 页面加载完成后自动播放一次
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                startJVM();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

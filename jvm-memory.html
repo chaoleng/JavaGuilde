@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JVM内存模型详解</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .memory-layout {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .memory-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* 左侧内存区域列表 */
+        .memory-areas {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .memory-area {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .memory-area:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .memory-area.active {
+            border-color: #ffd700;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .memory-area h3 {
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+
+        .memory-area p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* 右侧详细展示区 */
+        .detail-view {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .detail-content {
+            display: none;
+        }
+
+        .detail-content.active {
+            display: block;
+        }
+
+        .detail-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* 对象内存分配演示 */
+        .object-demo {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .object-header {
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            margin: -20px -20px 15px -20px;
+        }
+
+        .object-field {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .field-name {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .field-value {
+            color: #666;
+        }
+
+        /* 栈帧可视化 */
+        .stack-frame {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .stack-frame::before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: #667eea;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .frame-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .frame-section {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .section-label {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        /* 方法区内容 */
+        .class-info {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #764ba2;
+        }
+
+        .class-name {
+            font-weight: bold;
+            color: #764ba2;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .class-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .detail-item {
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        /* 代码示例 */
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            line-height: 1.6;
+        }
+
+        .keyword { color: #ff79c6; }
+        .type { color: #8be9fd; }
+        .method { color: #50fa7b; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; }
+
+        /* 内存分配动画 */
+        .allocation-animation {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .allocation-step {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .allocation-box {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 0 auto 10px auto;
+        }
+
+        .arrow-right {
+            font-size: 2em;
+            color: #667eea;
+        }
+
+        /* 内存布局图 */
+        .memory-diagram {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .memory-region {
+            border: 2px solid #667eea;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .region-label {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: white;
+            padding: 0 10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .region-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .memory-cell {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.85em;
+            border: 1px solid #ddd;
+        }
+
+        .memory-cell.allocated {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .memory-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
+
+        <div class="header animate__animated animate__fadeInDown">
+            <h1>🧠 JVM内存模型详解</h1>
+            <p>深入理解Java虚拟机的内存结构与分配机制</p>
+        </div>
+
+        <div class="control-panel animate__animated animate__fadeIn">
+            <button class="btn" onclick="startDemo()">▶️ 开始演示</button>
+            <button class="btn" onclick="resetDemo()">🔄 重置</button>
+        </div>
+
+        <div class="memory-layout animate__animated animate__fadeInUp">
+            <div class="memory-container">
+                <!-- 左侧内存区域列表 -->
+                <div class="memory-areas">
+                    <div class="memory-area" data-area="heap" onclick="showDetail('heap')">
+                        <h3>🗂️ 堆内存 (Heap)</h3>
+                        <p>存储所有对象实例和数组</p>
+                    </div>
+
+                    <div class="memory-area" data-area="stack" onclick="showDetail('stack')">
+                        <h3>📋 虚拟机栈 (VM Stack)</h3>
+                        <p>存储局部变量、方法调用</p>
+                    </div>
+
+                    <div class="memory-area" data-area="method" onclick="showDetail('method')">
+                        <h3>📚 方法区 (Method Area)</h3>
+                        <p>存储类信息、常量、静态变量</p>
+                    </div>
+
+                    <div class="memory-area" data-area="pc" onclick="showDetail('pc')">
+                        <h3>🧮 程序计数器 (PC Register)</h3>
+                        <p>记录当前执行字节码指令地址</p>
+                    </div>
+
+                    <div class="memory-area" data-area="native" onclick="showDetail('native')">
+                        <h3>🔧 本地方法栈 (Native Stack)</h3>
+                        <p>支持Native方法执行</p>
+                    </div>
+                </div>
+
+                <!-- 右侧详细展示区 -->
+                <div class="detail-view">
+                    <!-- 堆内存详情 -->
+                    <div class="detail-content" id="heap-detail">
+                        <h2 class="detail-title">堆内存 (Heap Memory)</h2>
+
+                        <div class="code-example">
+<span class="code-line"><span class="keyword">class</span> <span class="type">Person</span> {</span>
+<span class="code-line">    <span class="type">String</span> name;</span>
+<span class="code-line">    <span class="type">int</span> age;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="type">Person</span> p = <span class="keyword">new</span> <span class="type">Person</span>(); <span class="comment">// 对象在堆中分配</span></span>
+                        </div>
+
+                        <div class="allocation-animation">
+                            <div class="allocation-step">
+                                <div class="allocation-box">new</div>
+                                <p>创建对象</p>
+                            </div>
+                            <div class="arrow-right">→</div>
+                            <div class="allocation-step">
+                                <div class="allocation-box">堆</div>
+                                <p>分配内存</p>
+                            </div>
+                            <div class="arrow-right">→</div>
+                            <div class="allocation-step">
+                                <div class="allocation-box">ref</div>
+                                <p>返回引用</p>
+                            </div>
+                        </div>
+
+                        <div class="object-demo">
+                            <div class="object-header">Person对象 @ 0x7f5a6b8c</div>
+                            <div class="object-field">
+                                <span class="field-name">Mark Word</span>
+                                <span class="field-value">hashCode, GC年龄, 锁标志</span>
+                            </div>
+                            <div class="object-field">
+                                <span class="field-name">Class Pointer</span>
+                                <span class="field-value">→ Person.class</span>
+                            </div>
+                            <div class="object-field">
+                                <span class="field-name">name</span>
+                                <span class="field-value">"张三"</span>
+                            </div>
+                            <div class="object-field">
+                                <span class="field-name">age</span>
+                                <span class="field-value">25</span>
+                            </div>
+                        </div>
+
+                        <div class="memory-diagram">
+                            <h3 style="margin-bottom: 15px;">堆内存分代结构</h3>
+                            <div class="memory-region">
+                                <span class="region-label">新生代 (Young Generation) 1/3</span>
+                                <div class="region-content">
+                                    <div class="memory-cell">Eden</div>
+                                    <div class="memory-cell">Eden</div>
+                                    <div class="memory-cell">Eden</div>
+                                    <div class="memory-cell">S0</div>
+                                    <div class="memory-cell">S1</div>
+                                </div>
+                            </div>
+                            <div class="memory-region">
+                                <span class="region-label">老年代 (Old Generation) 2/3</span>
+                                <div class="region-content">
+                                    <div class="memory-cell">Old</div>
+                                    <div class="memory-cell">Old</div>
+                                    <div class="memory-cell">Old</div>
+                                    <div class="memory-cell">Old</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 虚拟机栈详情 -->
+                    <div class="detail-content" id="stack-detail">
+                        <h2 class="detail-title">虚拟机栈 (VM Stack)</h2>
+
+                        <div class="code-example">
+<span class="code-line"><span class="keyword">public void</span> <span class="method">method1</span>() {</span>
+<span class="code-line">    <span class="type">int</span> a = 10;</span>
+<span class="code-line">    <span class="method">method2</span>(a);</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">public void</span> <span class="method">method2</span>(<span class="type">int</span> x) {</span>
+<span class="code-line">    <span class="type">int</span> y = x * 2;</span>
+<span class="code-line">}</span>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <div class="stack-frame animate__animated animate__slideInUp">
+                                <div class="frame-title">栈帧: method2(int)</div>
+                                <div class="frame-section">
+                                    <div class="section-label">局部变量表</div>
+                                    <div class="object-field">
+                                        <span class="field-name">x</span>
+                                        <span class="field-value">10</span>
+                                    </div>
+                                    <div class="object-field">
+                                        <span class="field-name">y</span>
+                                        <span class="field-value">20</span>
+                                    </div>
+                                </div>
+                                <div class="frame-section">
+                                    <div class="section-label">操作数栈</div>
+                                    <div style="display: flex; gap: 5px;">
+                                        <div class="memory-cell allocated">20</div>
+                                        <div class="memory-cell allocated">10</div>
+                                    </div>
+                                </div>
+                                <div class="frame-section">
+                                    <div class="section-label">动态链接</div>
+                                    <div class="field-value">→ 方法区中的method2符号引用</div>
+                                </div>
+                                <div class="frame-section">
+                                    <div class="section-label">返回地址</div>
+                                    <div class="field-value">0x45f8 (method1的调用位置)</div>
+                                </div>
+                            </div>
+
+                            <div class="stack-frame animate__animated animate__slideInUp" style="animation-delay: 0.2s;">
+                                <div class="frame-title">栈帧: method1()</div>
+                                <div class="frame-section">
+                                    <div class="section-label">局部变量表</div>
+                                    <div class="object-field">
+                                        <span class="field-name">a</span>
+                                        <span class="field-value">10</span>
+                                    </div>
+                                </div>
+                                <div class="frame-section">
+                                    <div class="section-label">操作数栈</div>
+                                    <div style="display: flex; gap: 5px;">
+                                        <div class="memory-cell">空</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px;">
+                            <strong>💡 注意：</strong> 每个线程都有独立的虚拟机栈，线程私有。栈帧随方法调用而创建，随方法结束而销毁。
+                        </div>
+                    </div>
+
+                    <!-- 方法区详情 -->
+                    <div class="detail-content" id="method-detail">
+                        <h2 class="detail-title">方法区 (Method Area)</h2>
+
+                        <p style="margin-bottom: 20px; color: #666;">
+                            方法区是所有线程共享的内存区域，用于存储已被虚拟机加载的类信息、常量、静态变量等数据。
+                        </p>
+
+                        <div class="class-info">
+                            <div class="class-name">class Person</div>
+                            <div class="class-details">
+                                <div class="detail-item">
+                                    <strong>类型信息</strong><br>
+                                    修饰符: public<br>
+                                    父类: Object<br>
+                                    接口: [ ]
+                                </div>
+                                <div class="detail-item">
+                                    <strong>字段信息</strong><br>
+                                    name: String<br>
+                                    age: int
+                                </div>
+                                <div class="detail-item">
+                                    <strong>方法信息</strong><br>
+                                    getName(): String<br>
+                                    setName(String): void
+                                </div>
+                                <div class="detail-item">
+                                    <strong>常量池</strong><br>
+                                    #1: Class Person<br>
+                                    #2: String "name"<br>
+                                    #3: String "age"
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-example">
+<span class="code-line"><span class="keyword">public class</span> <span class="type">StaticDemo</span> {</span>
+<span class="code-line">    <span class="keyword">static</span> <span class="type">int</span> count = 0; <span class="comment">// 存储在方法区</span></span>
+<span class="code-line">    <span class="keyword">static final</span> <span class="type">String</span> NAME = <span class="string">"Java"</span>; <span class="comment">// 常量池</span></span>
+<span class="code-line">}</span>
+                        </div>
+
+                        <div class="memory-diagram">
+                            <h3 style="margin-bottom: 15px;">方法区内容结构</h3>
+                            <div class="memory-region">
+                                <span class="region-label">运行时常量池</span>
+                                <div class="region-content">
+                                    <div class="memory-cell allocated">"Java"</div>
+                                    <div class="memory-cell allocated">"Hello"</div>
+                                    <div class="memory-cell allocated">100</div>
+                                </div>
+                            </div>
+                            <div class="memory-region">
+                                <span class="region-label">静态变量</span>
+                                <div class="region-content">
+                                    <div class="memory-cell allocated">count=0</div>
+                                </div>
+                            </div>
+                            <div class="memory-region">
+                                <span class="region-label">类元数据</span>
+                                <div class="region-content">
+                                    <div class="memory-cell allocated">Person</div>
+                                    <div class="memory-cell allocated">Student</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background: #d1ecf1; border-radius: 10px;">
+                            <strong>📌 JDK 8+：</strong> 方法区的实现从永久代(PermGen)改为元空间(Metaspace)，使用本地内存而非堆内存。
+                        </div>
+                    </div>
+
+                    <!-- 程序计数器详情 -->
+                    <div class="detail-content" id="pc-detail">
+                        <h2 class="detail-title">程序计数器 (Program Counter Register)</h2>
+
+                        <p style="margin-bottom: 20px; color: #666;">
+                            程序计数器是一块较小的内存空间,可以看作是当前线程所执行的字节码的行号指示器。
+                        </p>
+
+                        <div class="code-example">
+<span class="code-line">0: iconst_1      <span class="comment">// 将常量1压入操作数栈</span></span>
+<span class="code-line">1: istore_1      <span class="comment">// 弹出栈顶元素,存入局部变量1</span></span>
+<span class="code-line">2: iconst_2      <span class="comment">// 将常量2压入操作数栈</span></span>
+<span class="code-line">3: istore_2      <span class="comment">// 弹出栈顶元素,存入局部变量2</span></span>
+<span class="code-line" style="background: #ff79c644;">4: iload_1       <span class="comment">// ← 当前PC指向这里</span></span>
+<span class="code-line">5: iload_2</span>
+<span class="code-line">6: iadd          <span class="comment">// 执行加法</span></span>
+<span class="code-line">7: istore_3</span>
+<span class="code-line">8: return</span>
+                        </div>
+
+                        <div class="object-demo">
+                            <div class="object-header">程序计数器状态</div>
+                            <div class="object-field">
+                                <span class="field-name">当前指令地址</span>
+                                <span class="field-value">0x0004</span>
+                            </div>
+                            <div class="object-field">
+                                <span class="field-name">当前指令</span>
+                                <span class="field-value">iload_1</span>
+                            </div>
+                            <div class="object-field">
+                                <span class="field-name">下一条指令</span>
+                                <span class="field-value">0x0005 (iload_2)</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px;">
+                            <strong>💡 特点：</strong>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>每个线程都有独立的程序计数器</li>
+                                <li>线程私有,互不影响</li>
+                                <li>唯一不会出现OutOfMemoryError的区域</li>
+                                <li>如果执行的是Native方法,计数器值为空(Undefined)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 本地方法栈详情 -->
+                    <div class="detail-content" id="native-detail">
+                        <h2 class="detail-title">本地方法栈 (Native Method Stack)</h2>
+
+                        <p style="margin-bottom: 20px; color: #666;">
+                            本地方法栈为虚拟机使用到的Native方法服务,与虚拟机栈类似,只是服务对象不同。
+                        </p>
+
+                        <div class="code-example">
+<span class="code-line"><span class="keyword">public class</span> <span class="type">NativeDemo</span> {</span>
+<span class="code-line">    <span class="comment">// 声明本地方法</span></span>
+<span class="code-line">    <span class="keyword">public native void</span> <span class="method">nativeMethod</span>();</span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="keyword">static</span> {</span>
+<span class="code-line">        System.<span class="method">loadLibrary</span>(<span class="string">"native-lib"</span>);</span>
+<span class="code-line">    }</span>
+<span class="code-line">}</span>
+                        </div>
+
+                        <div class="allocation-animation">
+                            <div class="allocation-step">
+                                <div class="allocation-box">Java</div>
+                                <p>Java方法调用</p>
+                            </div>
+                            <div class="arrow-right">→</div>
+                            <div class="allocation-step">
+                                <div class="allocation-box">JNI</div>
+                                <p>JNI接口</p>
+                            </div>
+                            <div class="arrow-right">→</div>
+                            <div class="allocation-step">
+                                <div class="allocation-box">C/C++</div>
+                                <p>本地方法</p>
+                            </div>
+                        </div>
+
+                        <div class="class-info">
+                            <div class="class-name">常见的本地方法示例</div>
+                            <div class="class-details">
+                                <div class="detail-item">
+                                    <strong>Object类</strong><br>
+                                    hashCode()<br>
+                                    clone()<br>
+                                    notify()
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Thread类</strong><br>
+                                    start()<br>
+                                    sleep()<br>
+                                    currentThread()
+                                </div>
+                                <div class="detail-item">
+                                    <strong>System类</strong><br>
+                                    currentTimeMillis()<br>
+                                    arraycopy()<br>
+                                    identityHashCode()
+                                </div>
+                                <div class="detail-item">
+                                    <strong>FileInputStream</strong><br>
+                                    open()<br>
+                                    read()<br>
+                                    close()
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background: #d1ecf1; border-radius: 10px;">
+                            <strong>📌 注意：</strong>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>HotSpot虚拟机将本地方法栈和虚拟机栈合二为一</li>
+                                <li>可能抛出StackOverflowError和OutOfMemoryError</li>
+                                <li>通过JNI (Java Native Interface) 调用本地方法</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 默认显示 -->
+                    <div class="detail-content active" id="default-detail">
+                        <h2 class="detail-title">JVM内存模型概览</h2>
+                        <p style="color: #666; font-size: 1.1em; line-height: 1.8;">
+                            👈 点击左侧的内存区域,查看详细信息和示例代码
+                        </p>
+
+                        <div class="memory-diagram" style="margin-top: 30px;">
+                            <h3 style="margin-bottom: 20px; text-align: center;">内存区域分类</h3>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                                <div style="background: #e3f2fd; padding: 20px; border-radius: 10px;">
+                                    <h4 style="color: #1976d2; margin-bottom: 15px;">🔄 线程共享</h4>
+                                    <div class="detail-item" style="margin-bottom: 10px;">堆 (Heap)</div>
+                                    <div class="detail-item">方法区 (Method Area)</div>
+                                </div>
+                                <div style="background: #fff3e0; padding: 20px; border-radius: 10px;">
+                                    <h4 style="color: #f57c00; margin-bottom: 15px;">👤 线程私有</h4>
+                                    <div class="detail-item" style="margin-bottom: 10px;">虚拟机栈 (VM Stack)</div>
+                                    <div class="detail-item" style="margin-bottom: 10px;">程序计数器 (PC Register)</div>
+                                    <div class="detail-item">本地方法栈 (Native Stack)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentArea = null;
+        let demoInterval = null;
+
+        function showDetail(area) {
+            // 移除所有active类
+            document.querySelectorAll('.memory-area').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.detail-content').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // 添加active类
+            document.querySelector(`[data-area="${area}"]`).classList.add('active');
+            const detailElement = document.getElementById(`${area}-detail`);
+            if (detailElement) {
+                detailElement.classList.add('active');
+                detailElement.classList.add('animate__animated', 'animate__fadeIn');
+            }
+
+            currentArea = area;
+        }
+
+        function startDemo() {
+            const areas = ['heap', 'stack', 'method', 'pc', 'native'];
+            let index = 0;
+
+            clearInterval(demoInterval);
+
+            demoInterval = setInterval(() => {
+                showDetail(areas[index]);
+                index = (index + 1) % areas.length;
+            }, 4000);
+
+            // 立即显示第一个
+            showDetail(areas[0]);
+        }
+
+        function resetDemo() {
+            clearInterval(demoInterval);
+            document.querySelectorAll('.memory-area').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.detail-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById('default-detail').classList.add('active');
+            currentArea = null;
+        }
+
+        // 页面加载完成后自动开始演示
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                startDemo();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
