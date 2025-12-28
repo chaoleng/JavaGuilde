@@ -6,6 +6,12 @@
     <title>Java虚拟机运行过程可视化</title>
     <!-- Animate.css CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
     <script src="i18n.js"></script>
     <style>
         * {
@@ -147,7 +153,7 @@
         }
 
         /* 代码块样式 */
-        .code-block {
+                .code-block {
             background: #2d2d2d;
             color: #f8f8f2;
             padding: 20px;
@@ -155,10 +161,22 @@
             font-family: 'Courier New', monospace;
             margin: 15px 0;
             font-size: 0.95em;
-            line-height: 1.8;
+            line-height: 1.4;
             white-space: pre;
+            text-align: left;
             overflow-x: auto;
             tab-size: 4;
+            position: relative;
+        }
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .code-keyword {
@@ -220,18 +238,29 @@
         /* 执行引擎动画 */
         .engine-animation {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
+            justify-content: center;
+            align-items: stretch;
             margin-top: 20px;
+            gap: 20px;
         }
 
         .engine-part {
             background: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
-            min-width: 120px;
+            flex: 1;
+            max-width: 180px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .engine-part .component-title {
+            white-space: nowrap;
         }
 
         /* 进度指示器 */
@@ -312,7 +341,46 @@
             background: #764ba2;
             color: white;
         }
-    </style>
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-700px);
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            transform: translateX(-705px);
+            background: white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
 </head>
 <body>
     <!-- 言語切り替え -->
@@ -321,8 +389,10 @@
             <option value="zh">中文</option>
             <option value="ja">日本語</option>
             <option value="en">English</option>
-        </select>
-    </div>
+        </select></div>
+    <!-- 返回主页按钮 -->
+    <a href="index.html" class="back-button">← <span data-i18n="backToHome">返回主页</span></a>
+
 
 
     <div class="container">
@@ -330,37 +400,32 @@
 
         <div class="control-panel">
             <button class="btn animate__animated animate__fadeIn" onclick="startJVM()">▶️ 启动JVM演示</button>
-            <button class="btn animate__animated animate__fadeIn" onclick="resetJVM()">🔄 重置</button>
-        </div>
+            <button class="btn animate__animated animate__fadeIn" onclick="resetJVM()">🔄 重置</button></div>
 
         <div class="progress-bar">
-            <div class="progress-fill" id="progressBar"></div>
-        </div>
+            <div class="progress-fill" id="progressBar"></div></div>
 
         <div class="jvm-container">
             <!-- 阶段1: 源代码 -->
             <div class="stage" id="stage1">
                 <div class="stage-title">
                     <span class="stage-number">1</span>
-                    源代码编写
-                </div>
+                    源代码编写</div>
                 <div class="stage-content">
-                    <div class="code-block">
-                        <span class="code-keyword">public class</span> <span class="code-class">HelloWorld</span> {
-                            <span class="code-keyword">public static void</span> <span class="code-method">main</span>(String[] args) {
-                                System.out.<span class="code-method">println</span>(<span class="code-string">"Hello, JVM!"</span>);
-                            }
-                        }
-                    </div>
-                </div>
+                    <div class="markdown-body">
+                    <pre><code class="language-java">public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, JVM!");
+    }
+}</code></pre>
+                </div></div>
             </div>
 
             <!-- 阶段2: 编译 -->
             <div class="stage" id="stage2">
                 <div class="stage-title">
                     <span class="stage-number">2</span>
-                    javac 编译器编译
-                </div>
+                    javac 编译器编译</div>
                 <div class="stage-content">
                     <div class="component">
                         <div class="component-title">📄 HelloWorld.java</div>
@@ -374,17 +439,14 @@
                     <span class="arrow">→</span>
                     <div class="component">
                         <div class="component-title">📦 HelloWorld.class</div>
-                        <div class="component-desc">字节码文件</div>
-                    </div>
-                </div>
+                        <div class="component-desc">字节码文件</div></div></div>
             </div>
 
             <!-- 阶段3: 类加载 -->
             <div class="stage" id="stage3">
                 <div class="stage-title">
                     <span class="stage-number">3</span>
-                    类加载子系统
-                </div>
+                    类加载子系统</div>
                 <div class="stage-content">
                     <div class="component">
                         <div class="component-title">📥 加载 (Loading)</div>
@@ -398,71 +460,55 @@
                     <span class="arrow">→</span>
                     <div class="component">
                         <div class="component-title">🎯 初始化 (Initialization)</div>
-                        <div class="component-desc">执行静态代码块</div>
-                    </div>
-                </div>
+                        <div class="component-desc">执行静态代码块</div></div></div>
             </div>
 
             <!-- 阶段4: 运行时数据区 -->
             <div class="stage" id="stage4">
                 <div class="stage-title">
                     <span class="stage-number">4</span>
-                    运行时数据区
-                </div>
+                    运行时数据区</div>
                 <div class="memory-area">
                     <div class="memory-block">
                         <h3>📚 方法区</h3>
-                        <p>存储类信息、常量、静态变量</p>
-                    </div>
+                        <p>存储类信息、常量、静态变量</p></div>
                     <div class="memory-block">
                         <h3>🗂️ 堆</h3>
-                        <p>存储对象实例和数组</p>
-                    </div>
+                        <p>存储对象实例和数组</p></div>
                     <div class="memory-block">
                         <h3>📋 虚拟机栈</h3>
-                        <p>存储局部变量、方法调用</p>
-                    </div>
+                        <p>存储局部变量、方法调用</p></div>
                     <div class="memory-block">
                         <h3>🧮 程序计数器</h3>
-                        <p>记录当前执行指令地址</p>
-                    </div>
+                        <p>记录当前执行指令地址</p></div>
                     <div class="memory-block">
                         <h3>🔧 本地方法栈</h3>
-                        <p>支持Native方法执行</p>
-                    </div>
-                </div>
+                        <p>支持Native方法执行</p></div></div>
             </div>
 
             <!-- 阶段5: 执行引擎 -->
             <div class="stage" id="stage5">
                 <div class="stage-title">
                     <span class="stage-number">5</span>
-                    执行引擎
-                </div>
+                    执行引擎</div>
                 <div class="stage-content">
                     <div class="engine-animation">
                         <div class="engine-part">
                             <div class="component-title">🔍 解释器</div>
-                            <div class="component-desc">逐行解释字节码</div>
-                        </div>
+                            <div class="component-desc">逐行解释字节码</div></div>
                         <div class="engine-part">
                             <div class="component-title">⚡ JIT编译器</div>
-                            <div class="component-desc">热点代码优化</div>
-                        </div>
+                            <div class="component-desc">热点代码优化</div></div>
                         <div class="engine-part">
                             <div class="component-title">🗑️ 垃圾回收器</div>
-                            <div class="component-desc">自动内存管理</div>
-                        </div>
-                    </div>
-                </div>
+                            <div class="component-desc">自动内存管理</div></div></div></div>
             </div>
 
             <!-- 阶段6: 字节码执行 -->
             <div class="stage" id="stage6">
                 <div class="stage-title">
                     <span class="stage-number">6</span>
-                    字节码执行
-                </div>
+                    字节码执行</div>
                 <div class="stage-content">
                     <div class="component">
                         <div class="component-title">1️⃣ 加载常量</div>
@@ -476,30 +522,25 @@
                     <span class="arrow">→</span>
                     <div class="component">
                         <div class="component-title">3️⃣ 返回结果</div>
-                        <div class="component-desc">return</div>
-                    </div>
-                </div>
+                        <div class="component-desc">return</div></div></div>
             </div>
 
             <!-- 阶段7: 输出结果 -->
             <div class="stage" id="stage7">
                 <div class="stage-title">
                     <span class="stage-number">7</span>
-                    程序输出
-                </div>
+                    程序输出</div>
                 <div class="stage-content">
-                    <div class="code-block" style="background: #1e1e1e; font-size: 1.2em; text-align: center;">
-                        <span style="color: #50fa7b;">Hello, JVM!</span>
-                    </div>
-                </div>
+                    <div class="markdown-body">
+                    <pre><code class="language-java">Hello, JVM!</code></pre>
+                </div></div>
             </div>
 
             <!-- 阶段8: GC垃圾回收 -->
             <div class="stage" id="stage8">
                 <div class="stage-title">
                     <span class="stage-number">8</span>
-                    垃圾回收机制
-                </div>
+                    垃圾回收机制</div>
                 <div class="stage-content">
                     <div class="component">
                         <div class="component-title">🔍 标记阶段</div>
@@ -513,11 +554,7 @@
                     <span class="arrow">→</span>
                     <div class="component">
                         <div class="component-title">📦 整理阶段</div>
-                        <div class="component-desc">内存碎片整理</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="component-desc">内存碎片整理</div></div></div></div></div>
     </div>
 
     <script>
