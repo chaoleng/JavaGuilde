@@ -263,14 +263,25 @@
             margin: 15px 0;
             font-family: 'Courier New', monospace;
             font-size: 0.95em;
-            line-height: 1.8;
+            line-height: 1.4;
             white-space: pre;
+            text-align: left;
             overflow-x: auto;
             tab-size: 4;
+            position: relative;
+        }
+        .code-example::before {
+            content: 'BYTECODE';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
         }
 
         .code-line {
-            line-height: 1.8;
+            line-height: 1.4;
         }
 
         .keyword { color: #ff79c6; }
@@ -397,7 +408,30 @@
             background: #764ba2;
             color: white;
         }
-    </style>
+    
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 </head>
 <body>
     <!-- 言語切り替え -->
@@ -406,8 +440,7 @@
             <option value="zh">中文</option>
             <option value="ja">日本語</option>
             <option value="en">English</option>
-        </select>
-    </div>
+        </select></div>
 
 
     <div class="container">
@@ -415,13 +448,11 @@
 
         <div class="header animate__animated animate__fadeInDown">
             <h1>🧠 <span data-i18n="jvmMemoryTitle">JVM内存模型详解</span></h1>
-            <p>深入理解Java虚拟机的内存结构与分配机制</p>
-        </div>
+            <p>深入理解Java虚拟机的内存结构与分配机制</p></div>
 
         <div class="control-panel animate__animated animate__fadeIn">
             <button class="btn" onclick="startDemo()">▶️ 开始演示</button>
-            <button class="btn" onclick="resetDemo()">🔄 重置</button>
-        </div>
+            <button class="btn" onclick="resetDemo()">🔄 重置</button></div>
 
         <div class="memory-layout animate__animated animate__fadeInUp">
             <div class="memory-container">
@@ -429,28 +460,23 @@
                 <div class="memory-areas">
                     <div class="memory-area" data-area="heap" onclick="showDetail('heap')">
                         <h3>🗂️ 堆内存 (Heap)</h3>
-                        <p>存储所有对象实例和数组</p>
-                    </div>
+                        <p>存储所有对象实例和数组</p></div>
 
                     <div class="memory-area" data-area="stack" onclick="showDetail('stack')">
                         <h3>📋 虚拟机栈 (VM Stack)</h3>
-                        <p>存储局部变量、方法调用</p>
-                    </div>
+                        <p>存储局部变量、方法调用</p></div>
 
                     <div class="memory-area" data-area="method" onclick="showDetail('method')">
                         <h3>📚 方法区 (Method Area)</h3>
-                        <p>存储类信息、常量、静态变量</p>
-                    </div>
+                        <p>存储类信息、常量、静态变量</p></div>
 
                     <div class="memory-area" data-area="pc" onclick="showDetail('pc')">
                         <h3>🧮 程序计数器 (PC Register)</h3>
-                        <p>记录当前执行字节码指令地址</p>
-                    </div>
+                        <p>记录当前执行字节码指令地址</p></div>
 
                     <div class="memory-area" data-area="native" onclick="showDetail('native')">
                         <h3>🔧 本地方法栈 (Native Stack)</h3>
-                        <p>支持Native方法执行</p>
-                    </div>
+                        <p>支持Native方法执行</p></div>
                 </div>
 
                 <!-- 右侧详细展示区 -->
@@ -465,45 +491,35 @@
 <span class="code-line">    <span class="type">int</span> age;</span>
 <span class="code-line">}</span>
 <span class="code-line"></span>
-<span class="code-line"><span class="type">Person</span> p = <span class="keyword">new</span> <span class="type">Person</span>(); <span class="comment">// 对象在堆中分配</span></span>
-                        </div>
+<span class="code-line"><span class="type">Person</span> p = <span class="keyword">new</span> <span class="type">Person</span>(); <span class="comment">// 对象在堆中分配</span></span></div>
 
                         <div class="allocation-animation">
                             <div class="allocation-step">
                                 <div class="allocation-box">new</div>
-                                <p>创建对象</p>
-                            </div>
+                                <p>创建对象</p></div>
                             <div class="arrow-right">→</div>
                             <div class="allocation-step">
                                 <div class="allocation-box">堆</div>
-                                <p>分配内存</p>
-                            </div>
+                                <p>分配内存</p></div>
                             <div class="arrow-right">→</div>
                             <div class="allocation-step">
                                 <div class="allocation-box">ref</div>
-                                <p>返回引用</p>
-                            </div>
-                        </div>
+                                <p>返回引用</p></div></div>
 
                         <div class="object-demo">
                             <div class="object-header">Person对象 @ 0x7f5a6b8c</div>
                             <div class="object-field">
                                 <span class="field-name">Mark Word</span>
-                                <span class="field-value">hashCode, GC年龄, 锁标志</span>
-                            </div>
+                                <span class="field-value">hashCode, GC年龄, 锁标志</span></div>
                             <div class="object-field">
                                 <span class="field-name">Class Pointer</span>
-                                <span class="field-value">→ Person.class</span>
-                            </div>
+                                <span class="field-value">→ Person.class</span></div>
                             <div class="object-field">
                                 <span class="field-name">name</span>
-                                <span class="field-value">"张三"</span>
-                            </div>
+                                <span class="field-value">"张三"</span></div>
                             <div class="object-field">
                                 <span class="field-name">age</span>
-                                <span class="field-value">25</span>
-                            </div>
-                        </div>
+                                <span class="field-value">25</span></div></div>
 
                         <div class="memory-diagram">
                             <h3 style="margin-bottom: 15px;">堆内存分代结构</h3>
@@ -514,19 +530,14 @@
                                     <div class="memory-cell">Eden</div>
                                     <div class="memory-cell">Eden</div>
                                     <div class="memory-cell">S0</div>
-                                    <div class="memory-cell">S1</div>
-                                </div>
-                            </div>
+                                    <div class="memory-cell">S1</div></div></div>
                             <div class="memory-region">
                                 <span class="region-label">老年代 (Old Generation) 2/3</span>
                                 <div class="region-content">
                                     <div class="memory-cell">Old</div>
                                     <div class="memory-cell">Old</div>
                                     <div class="memory-cell">Old</div>
-                                    <div class="memory-cell">Old</div>
-                                </div>
-                            </div>
-                        </div>
+                                    <div class="memory-cell">Old</div></div></div></div>
                     </div>
 
                     <!-- 虚拟机栈详情 -->
@@ -541,8 +552,7 @@
 <span class="code-line"></span>
 <span class="code-line"><span class="keyword">public void</span> <span class="method">method2</span>(<span class="type">int</span> x) {</span>
 <span class="code-line">    <span class="type">int</span> y = x * 2;</span>
-<span class="code-line">}</span>
-                        </div>
+<span class="code-line">}</span></div>
 
                         <div style="margin-top: 20px;">
                             <div class="stack-frame animate__animated animate__slideInUp">
@@ -551,29 +561,21 @@
                                     <div class="section-label">局部变量表</div>
                                     <div class="object-field">
                                         <span class="field-name">x</span>
-                                        <span class="field-value">10</span>
-                                    </div>
+                                        <span class="field-value">10</span></div>
                                     <div class="object-field">
                                         <span class="field-name">y</span>
-                                        <span class="field-value">20</span>
-                                    </div>
-                                </div>
+                                        <span class="field-value">20</span></div></div>
                                 <div class="frame-section">
                                     <div class="section-label">操作数栈</div>
                                     <div style="display: flex; gap: 5px;">
                                         <div class="memory-cell allocated">20</div>
-                                        <div class="memory-cell allocated">10</div>
-                                    </div>
-                                </div>
+                                        <div class="memory-cell allocated">10</div></div></div>
                                 <div class="frame-section">
                                     <div class="section-label">动态链接</div>
-                                    <div class="field-value">→ 方法区中的method2符号引用</div>
-                                </div>
+                                    <div class="field-value">→ 方法区中的method2符号引用</div></div>
                                 <div class="frame-section">
                                     <div class="section-label">返回地址</div>
-                                    <div class="field-value">0x45f8 (method1的调用位置)</div>
-                                </div>
-                            </div>
+                                    <div class="field-value">0x45f8 (method1的调用位置)</div></div></div>
 
                             <div class="stack-frame animate__animated animate__slideInUp" style="animation-delay: 0.2s;">
                                 <div class="frame-title">栈帧: method1()</div>
@@ -581,21 +583,14 @@
                                     <div class="section-label">局部变量表</div>
                                     <div class="object-field">
                                         <span class="field-name">a</span>
-                                        <span class="field-value">10</span>
-                                    </div>
-                                </div>
+                                        <span class="field-value">10</span></div></div>
                                 <div class="frame-section">
                                     <div class="section-label">操作数栈</div>
                                     <div style="display: flex; gap: 5px;">
-                                        <div class="memory-cell">空</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                        <div class="memory-cell">空</div></div></div></div></div>
 
                         <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px;">
-                            <strong>💡 注意：</strong> 每个线程都有独立的虚拟机栈，线程私有。栈帧随方法调用而创建，随方法结束而销毁。
-                        </div>
+                            <strong>💡 注意：</strong> 每个线程都有独立的虚拟机栈，线程私有。栈帧随方法调用而创建，随方法结束而销毁。</div>
                     </div>
 
                     <!-- 方法区详情 -->
@@ -613,33 +608,26 @@
                                     <strong>类型信息</strong><br>
                                     修饰符: public<br>
                                     父类: Object<br>
-                                    接口: [ ]
-                                </div>
+                                    接口: [ ]</div>
                                 <div class="detail-item">
                                     <strong>字段信息</strong><br>
                                     name: String<br>
-                                    age: int
-                                </div>
+                                    age: int</div>
                                 <div class="detail-item">
                                     <strong>方法信息</strong><br>
                                     getName(): String<br>
-                                    setName(String): void
-                                </div>
+                                    setName(String): void</div>
                                 <div class="detail-item">
                                     <strong>常量池</strong><br>
                                     #1: Class Person<br>
                                     #2: String "name"<br>
-                                    #3: String "age"
-                                </div>
-                            </div>
-                        </div>
+                                    #3: String "age"</div></div></div>
 
                         <div class="code-example">
 <span class="code-line"><span class="keyword">public class</span> <span class="type">StaticDemo</span> {</span>
 <span class="code-line">    <span class="keyword">static</span> <span class="type">int</span> count = 0; <span class="comment">// 存储在方法区</span></span>
 <span class="code-line">    <span class="keyword">static final</span> <span class="type">String</span> NAME = <span class="string">"Java"</span>; <span class="comment">// 常量池</span></span>
-<span class="code-line">}</span>
-                        </div>
+<span class="code-line">}</span></div>
 
                         <div class="memory-diagram">
                             <h3 style="margin-bottom: 15px;">方法区内容结构</h3>
@@ -648,27 +636,19 @@
                                 <div class="region-content">
                                     <div class="memory-cell allocated">"Java"</div>
                                     <div class="memory-cell allocated">"Hello"</div>
-                                    <div class="memory-cell allocated">100</div>
-                                </div>
-                            </div>
+                                    <div class="memory-cell allocated">100</div></div></div>
                             <div class="memory-region">
                                 <span class="region-label">静态变量</span>
                                 <div class="region-content">
-                                    <div class="memory-cell allocated">count=0</div>
-                                </div>
-                            </div>
+                                    <div class="memory-cell allocated">count=0</div></div></div>
                             <div class="memory-region">
                                 <span class="region-label">类元数据</span>
                                 <div class="region-content">
                                     <div class="memory-cell allocated">Person</div>
-                                    <div class="memory-cell allocated">Student</div>
-                                </div>
-                            </div>
-                        </div>
+                                    <div class="memory-cell allocated">Student</div></div></div></div>
 
                         <div style="margin-top: 20px; padding: 15px; background: #d1ecf1; border-radius: 10px;">
-                            <strong>📌 JDK 8+：</strong> 方法区的实现从永久代(PermGen)改为元空间(Metaspace)，使用本地内存而非堆内存。
-                        </div>
+                            <strong>📌 JDK 8+：</strong> 方法区的实现从永久代(PermGen)改为元空间(Metaspace)，使用本地内存而非堆内存。</div>
                     </div>
 
                     <!-- 程序计数器详情 -->
@@ -688,24 +668,19 @@
 <span class="code-line">5: iload_2</span>
 <span class="code-line">6: iadd          <span class="comment">// 执行加法</span></span>
 <span class="code-line">7: istore_3</span>
-<span class="code-line">8: return</span>
-                        </div>
+<span class="code-line">8: return</span></div>
 
                         <div class="object-demo">
                             <div class="object-header">程序计数器状态</div>
                             <div class="object-field">
                                 <span class="field-name">当前指令地址</span>
-                                <span class="field-value">0x0004</span>
-                            </div>
+                                <span class="field-value">0x0004</span></div>
                             <div class="object-field">
                                 <span class="field-name">当前指令</span>
-                                <span class="field-value">iload_1</span>
-                            </div>
+                                <span class="field-value">iload_1</span></div>
                             <div class="object-field">
                                 <span class="field-name">下一条指令</span>
-                                <span class="field-value">0x0005 (iload_2)</span>
-                            </div>
-                        </div>
+                                <span class="field-value">0x0005 (iload_2)</span></div></div>
 
                         <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px;">
                             <strong>💡 特点：</strong>
@@ -714,8 +689,7 @@
                                 <li>线程私有,互不影响</li>
                                 <li>唯一不会出现OutOfMemoryError的区域</li>
                                 <li>如果执行的是Native方法,计数器值为空(Undefined)</li>
-                            </ul>
-                        </div>
+                            </ul></div>
                     </div>
 
                     <!-- 本地方法栈详情 -->
@@ -734,25 +708,20 @@
 <span class="code-line">    <span class="keyword">static</span> {</span>
 <span class="code-line">        System.<span class="method">loadLibrary</span>(<span class="string">"native-lib"</span>);</span>
 <span class="code-line">    }</span>
-<span class="code-line">}</span>
-                        </div>
+<span class="code-line">}</span></div>
 
                         <div class="allocation-animation">
                             <div class="allocation-step">
                                 <div class="allocation-box">Java</div>
-                                <p>Java方法调用</p>
-                            </div>
+                                <p>Java方法调用</p></div>
                             <div class="arrow-right">→</div>
                             <div class="allocation-step">
                                 <div class="allocation-box">JNI</div>
-                                <p>JNI接口</p>
-                            </div>
+                                <p>JNI接口</p></div>
                             <div class="arrow-right">→</div>
                             <div class="allocation-step">
                                 <div class="allocation-box">C/C++</div>
-                                <p>本地方法</p>
-                            </div>
-                        </div>
+                                <p>本地方法</p></div></div>
 
                         <div class="class-info">
                             <div class="class-name">常见的本地方法示例</div>
@@ -761,28 +730,22 @@
                                     <strong>Object类</strong><br>
                                     hashCode()<br>
                                     clone()<br>
-                                    notify()
-                                </div>
+                                    notify()</div>
                                 <div class="detail-item">
                                     <strong>Thread类</strong><br>
                                     start()<br>
                                     sleep()<br>
-                                    currentThread()
-                                </div>
+                                    currentThread()</div>
                                 <div class="detail-item">
                                     <strong>System类</strong><br>
                                     currentTimeMillis()<br>
                                     arraycopy()<br>
-                                    identityHashCode()
-                                </div>
+                                    identityHashCode()</div>
                                 <div class="detail-item">
                                     <strong>FileInputStream</strong><br>
                                     open()<br>
                                     read()<br>
-                                    close()
-                                </div>
-                            </div>
-                        </div>
+                                    close()</div></div></div>
 
                         <div style="margin-top: 20px; padding: 15px; background: #d1ecf1; border-radius: 10px;">
                             <strong>📌 注意：</strong>
@@ -790,8 +753,7 @@
                                 <li>HotSpot虚拟机将本地方法栈和虚拟机栈合二为一</li>
                                 <li>可能抛出StackOverflowError和OutOfMemoryError</li>
                                 <li>通过JNI (Java Native Interface) 调用本地方法</li>
-                            </ul>
-                        </div>
+                            </ul></div>
                     </div>
 
                     <!-- 默认显示 -->
@@ -807,20 +769,12 @@
                                 <div style="background: #e3f2fd; padding: 20px; border-radius: 10px;">
                                     <h4 style="color: #1976d2; margin-bottom: 15px;">🔄 线程共享</h4>
                                     <div class="detail-item" style="margin-bottom: 10px;">堆 (Heap)</div>
-                                    <div class="detail-item">方法区 (Method Area)</div>
-                                </div>
+                                    <div class="detail-item">方法区 (Method Area)</div></div>
                                 <div style="background: #fff3e0; padding: 20px; border-radius: 10px;">
                                     <h4 style="color: #f57c00; margin-bottom: 15px;">👤 线程私有</h4>
                                     <div class="detail-item" style="margin-bottom: 10px;">虚拟机栈 (VM Stack)</div>
                                     <div class="detail-item" style="margin-bottom: 10px;">程序计数器 (PC Register)</div>
-                                    <div class="detail-item">本地方法栈 (Native Stack)</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                    <div class="detail-item">本地方法栈 (Native Stack)</div></div></div></div></div></div></div></div>
     </div>
 
     <script>

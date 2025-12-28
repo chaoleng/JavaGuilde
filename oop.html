@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面向对象编程 - Java可视化系列</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="i18n.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #language-selector {
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        #language-selector:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #language-selector option {
+            background: #764ba2;
+            color: white;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #333;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 0.95em;
+            line-height: 1.4;
+            white-space: pre;
+            text-align: left;
+            overflow-x: auto;
+            tab-size: 4;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .keyword { color: #ff79c6; }
+        .type { color: #8be9fd; }
+        .method { color: #50fa7b; }
+        .comment { color: #6272a4; }
+        .string { color: #f1fa8c; }
+        .number { color: #bd93f9; }
+
+        .concept-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .concept-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .concept-card p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .oop-diagram {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .class-box {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 400px;
+        }
+
+        .class-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .class-members {
+            text-align: left;
+            padding: 10px;
+        }
+
+        .class-members div {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .info-box {
+            padding: 20px;
+            background: #d1ecf1;
+            border-radius: 10px;
+            border-left: 4px solid #17a2b8;
+            margin: 20px 0;
+        }
+
+        .info-box strong {
+            color: #0c5460;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-output {
+            background: #1e1e1e;
+            color: #50fa7b;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            min-height: 100px;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pillar-card {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .pillar-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .pillar-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+    
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</head>
+<body>
+    <div class="language-switcher">
+        <select id="language-selector" onchange="window.langSwitcher.changeLanguage(this.value)">
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
+
+        <div class="header animate__animated animate__fadeInDown">
+            <h1>🎯 オブジェクト指向プログラミング (OOP)</h1>
+            <p>クラス、オブジェクト、継承、ポリモーフィズムの理解</p>
+        </div>
+
+        <div class="main-content animate__animated animate__fadeInUp">
+
+            <!-- OOPの4大原則 -->
+            <h2 class="section-title">🏛️ OOPの四大原則</h2>
+
+            <div class="pillars-grid">
+                <div class="pillar-card">
+                    <div class="pillar-icon">📦</div>
+                    <h3>カプセル化</h3>
+                    <p>データとメソッドをクラス内に隠蔽し、外部からのアクセスを制御</p>
+                </div>
+
+                <div class="pillar-card">
+                    <div class="pillar-icon">🧬</div>
+                    <h3>継承</h3>
+                    <p>既存のクラスから新しいクラスを作成し、コードの再利用を実現</p>
+                </div>
+
+                <div class="pillar-card">
+                    <div class="pillar-icon">🎭</div>
+                    <h3>ポリモーフィズム</h3>
+                    <p>同じインターフェースで異なる実装を持つオブジェクトを扱う</p>
+                </div>
+
+                <div class="pillar-card">
+                    <div class="pillar-icon">🎨</div>
+                    <h3>抽象化</h3>
+                    <p>複雑な実装の詳細を隠し、重要な特性だけを公開</p>
+                </div>
+            </div>
+
+            <!-- クラスとオブジェクト -->
+            <h2 class="section-title">📖 クラスとオブジェクト</h2>
+
+            <div class="concept-card">
+                <h3>クラス (Class)</h3>
+                <p>オブジェクトの設計図・テンプレート。属性(フィールド)と動作(メソッド)を定義します。</p>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">public class Person {
+    // フィールド (属性)
+    private String name;
+    private int age;
+
+    // コンストラクタ
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    // メソッド (動作)
+    public void introduce() {
+        System.out.println("私は" + name + "で、" + age + "歳です。");
+    }
+
+    // Getter/Setter
+    public String getName() {
+        return name;
+    }
+
+    public void setAge(int age) {
+        if (age > 0) {
+            this.age = age;
+        }
+    }
+}</code></pre>
+                </div>
+
+            <div class="concept-card">
+                <h3>オブジェクト (Object)</h3>
+                <p>クラスから生成された実体。newキーワードで作成されます。</p>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// オブジェクトの作成
+Person person1 = new Person("太郎", 25);
+Person person2 = new Person("花子", 23);
+
+// メソッド呼び出し
+person1.introduce();  // 出力: 私は太郎で、25歳です。
+person2.introduce();  // 出力: 私は花子で、23歳です。</code></pre>
+                </div>
+
+            <!-- 継承 -->
+            <h2 class="section-title">🧬 継承 (Inheritance)</h2>
+
+            <div class="concept-card">
+                <h3>継承の概念</h3>
+                <p>既存のクラス(親クラス/スーパークラス)から新しいクラス(子クラス/サブクラス)を作成し、コードを再利用</p>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// 親クラス
+public class Animal {
+    protected String name;
+
+    public void eat() {
+        System.out.println(name + " is eating");
+    }
+
+    public void sleep() {
+        System.out.println(name + " is sleeping");
+    }
+}
+
+// 子クラス - Dogは Animalを継承
+public class Dog extends Animal {
+    public Dog(String name) {
+        this.name = name;
+    }
+
+    // 子クラス固有のメソッド
+    public void bark() {
+        System.out.println(name + " is barking: ワンワン!");
+    }
+
+    // メソッドのオーバーライド
+    @Override
+    public void eat() {
+        System.out.println(name + " is eating dog food");
+    }
+}</code></pre>
+                </div>
+
+            <!-- ポリモーフィズム -->
+            <h2 class="section-title">🎭 ポリモーフィズム (Polymorphism)</h2>
+
+            <div class="concept-card">
+                <h3>ポリモーフィズムとは</h3>
+                <p>同じインターフェースや親クラスの参照で、異なるオブジェクトを扱える能力</p>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// インターフェース定義
+interface Shape {
+    void draw();
+    double getArea();
+}
+
+// 実装クラス1
+class Circle implements Shape {
+    private double radius;
+
+    @Override
+    public void draw() {
+        System.out.println("円を描画");
+    }
+
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+// 実装クラス2
+class Rectangle implements Shape {
+    private double width, height;
+
+    @Override
+    public void draw() {
+        System.out.println("長方形を描画");
+    }
+
+    @Override
+    public double getArea() {
+        return width * height;
+    }
+}
+
+// ポリモーフィズムの使用
+Shape[] shapes = {new Circle(), new Rectangle()};
+for (Shape shape : shapes) {
+    shape.draw();  // 動的バインディング
+}</code></pre>
+                </div>
+
+            <!-- インタラクティブデモ -->
+            <h2 class="section-title">🎮 インタラクティブデモ</h2>
+
+            <div class="oop-diagram">
+                <h3>継承階層の可視化</h3>
+
+                <div class="class-box" style="background: #e3f2fd;">
+                    <div class="class-name">Animal (親クラス)</div>
+                    <div class="class-members">
+                        <div>+ name: String</div>
+                        <div>+ eat(): void</div>
+                        <div>+ sleep(): void</div>
+                    </div>
+                </div>
+
+                <div style="margin: 20px 0;">⬇️ extends</div>
+
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                    <div class="class-box" style="max-width: 300px; background: #fff3e0;">
+                        <div class="class-name">Dog</div>
+                        <div class="class-members">
+                            <div>+ bark(): void</div>
+                            <div>+ eat(): void <em>(override)</em></div>
+                        </div>
+                    </div>
+
+                    <div class="class-box" style="max-width: 300px; background: #f3e5f5;">
+                        <div class="class-name">Cat</div>
+                        <div class="class-members">
+                            <div>+ meow(): void</div>
+                            <div>+ eat(): void <em>(override)</em></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="runOOPDemo()">▶️ OOPデモ実行</button>
+                <button class="btn" onclick="clearOutput()">🔄 クリア</button>
+
+                <div class="demo-output" id="output">出力結果がここに表示されます...</div>
+            </div>
+
+            <!-- 重要なポイント -->
+            <div class="info-box">
+                <strong>💡 重要なポイント:</strong><br>
+                • カプセル化: private修飾子でデータを隠蔽、公開APIはpublic<br>
+                • 継承: Javaは単一継承のみ（1つの親クラスのみ）<br>
+                • インターフェース: 複数のインターフェースを実装可能<br>
+                • ポリモーフィズム: 親クラス型の参照で子クラスのインスタンスを扱える<br>
+                • 抽象クラス: インスタンス化不可、abstractメソッドを含む
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runOOPDemo() {
+            const output = document.getElementById('output');
+            let result = '=== OOPデモ実行 ===\n\n';
+
+            result += '【ポリモーフィズムのデモ】\n';
+            result += 'Animal dog = new Dog("ポチ");\n';
+            result += 'dog.eat(); // 出力: ポチ is eating dog food\n';
+            result += 'dog.sleep(); // 出力: ポチ is sleeping\n\n';
+
+            result += 'Animal cat = new Cat("タマ");\n';
+            result += 'cat.eat(); // 出力: タマ is eating cat food\n';
+            result += 'cat.sleep(); // 出力: タマ is sleeping\n\n';
+
+            result += '【カプセル化のデモ】\n';
+            result += 'Person person = new Person("太郎", 25);\n';
+            result += 'person.getName(); // OK: public getter\n';
+            result += '// person.age; // エラー: private field\n';
+            result += 'person.setAge(30); // OK: public setter\n\n';
+
+            result += '✅ デモ完了！\n';
+            result += 'OOPの原則により、コードの再利用性と保守性が向上します。';
+
+            output.textContent = result;
+        }
+
+        function clearOutput() {
+            document.getElementById('output').textContent = '出力結果がここに表示されます...';
+        }
+    </script>
+</body>
+</html>

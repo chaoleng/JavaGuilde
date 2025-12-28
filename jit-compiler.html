@@ -86,10 +86,22 @@
             font-family: 'Courier New', monospace;
             margin: 15px 0;
             font-size: 0.95em;
-            line-height: 1.8;
+            line-height: 1.4;
             white-space: pre;
+            text-align: left;
             overflow-x: auto;
             tab-size: 4;
+            position: relative;
+        }
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
+            text-transform: uppercase;
         }
         .keyword { color: #ff79c6; }
         .type { color: #8be9fd; }
@@ -170,7 +182,30 @@
             background: #764ba2;
             color: white;
         }
-    </style>
+    
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 </head>
 <body>
     <!-- 言語切り替え -->
@@ -179,45 +214,37 @@
             <option value="zh">中文</option>
             <option value="ja">日本語</option>
             <option value="en">English</option>
-        </select>
-    </div>
+        </select></div>
 
 
     <div class="container">
         <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
         <div class="header animate__animated animate__fadeInDown">
             <h1>⚡ <span data-i18n="jitTitle">JIT编译优化</span></h1>
-            <p>即时编译器的魔法 - 让Java飞起来</p>
-        </div>
+            <p>即时编译器的魔法 - 让Java飞起来</p></div>
         <div class="control-panel animate__animated animate__fadeIn">
             <button class="btn" onclick="demonstrateJIT()">▶️ JIT流程演示</button>
             <button class="btn" onclick="demonstrateHotspot()">🔥 热点检测</button>
-            <button class="btn" onclick="reset()">🔄 重置</button>
-        </div>
+            <button class="btn" onclick="reset()">🔄 重置</button></div>
         <div class="main-content animate__animated animate__fadeInUp">
             <h2 class="section-title">🎯 JIT编译流程</h2>
             <div class="compiler-flow" id="jitFlow">
                 <div class="flow-step" data-step="1">
                     <div class="flow-icon">📝</div>
                     <div class="flow-title">解释执行</div>
-                    <p>初始阶段逐行解释字节码</p>
-                </div>
+                    <p>初始阶段逐行解释字节码</p></div>
                 <div class="flow-step" data-step="2">
                     <div class="flow-icon">🔥</div>
                     <div class="flow-title">热点检测</div>
-                    <p>监控方法调用次数</p>
-                </div>
+                    <p>监控方法调用次数</p></div>
                 <div class="flow-step" data-step="3">
                     <div class="flow-icon">⚙️</div>
                     <div class="flow-title">编译触发</div>
-                    <p>达到阈值触发JIT编译</p>
-                </div>
+                    <p>达到阈值触发JIT编译</p></div>
                 <div class="flow-step" data-step="4">
                     <div class="flow-icon">🚀</div>
                     <div class="flow-title">本地代码</div>
-                    <p>执行优化后的机器码</p>
-                </div>
-            </div>
+                    <p>执行优化后的机器码</p></div></div>
 
             <h2 class="section-title">🔥 热点代码检测</h2>
             <div style="padding: 20px; background: #f8f9fa; border-radius: 15px;">
@@ -227,8 +254,7 @@
                 </div>
                 <p style="text-align: center; margin-top: 10px; color: #666;">
                     阈值: 10000次 (C1编译器) / 10000次 (C2编译器)
-                </p>
-            </div>
+                </p></div>
 
             <h2 class="section-title">🎨 JIT优化技术</h2>
             <div class="optimization-card">
@@ -237,36 +263,31 @@
                 <div class="before-after">
                     <div class="before-after-box">
                         <h4>优化前</h4>
-                        <div class="code-block" style="margin: 10px 0; padding: 10px; font-size: 0.85em;">
-<span class="keyword">int</span> result = <span class="method">add</span>(a, b);
+                        <div class="markdown-body">
+                    <pre><code class="language-java">int result = add(a, b);
 
-<span class="keyword">int</span> <span class="method">add</span>(<span class="keyword">int</span> x, <span class="keyword">int</span> y) {
-    <span class="keyword">return</span> x + y;
-}
-                        </div>
-                    </div>
+int add(int x, int y) {
+    return x + y;
+}</code></pre>
+                </div></div>
                     <div class="before-after-box">
                         <h4>优化后 ✅</h4>
-                        <div class="code-block" style="margin: 10px 0; padding: 10px; font-size: 0.85em;">
-<span class="keyword">int</span> result = a + b;
-<span class="comment">// 方法调用被内联</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        <div class="markdown-body">
+                    <pre><code class="language-java">int result = a + b;
+// 方法调用被内联</code></pre>
+                </div></div></div></div>
 
             <div class="optimization-card">
                 <h3>2️⃣ 逃逸分析 (Escape Analysis)</h3>
                 <p>分析对象作用域，如果对象不会逃逸到方法外，可进行栈上分配或标量替换</p>
-                <div class="code-block">
-<span class="keyword">public void</span> <span class="method">test</span>() {
-    <span class="type">Point</span> p = <span class="keyword">new</span> <span class="type">Point</span>(1, 2);  <span class="comment">// 对象未逃逸</span>
-    <span class="keyword">int</span> sum = p.x + p.y;
-    <span class="comment">// JIT优化: 将对象拆解为局部变量 (标量替换)</span>
-    <span class="comment">// int x = 1; int y = 2; int sum = x + y;</span>
-}
-                </div>
-            </div>
+                <div class="markdown-body">
+                    <pre><code class="language-java">public void test() {
+    Point p = new Point(1, 2);  // 对象未逃逸
+    int sum = p.x + p.y;
+    // JIT优化: 将对象拆解为局部变量 (标量替換)
+    // int x = 1; int y = 2; int sum = x + y;
+}</code></pre>
+                </div></div>
 
             <div class="optimization-card">
                 <h3>3️⃣ 循环优化</h3>
@@ -274,40 +295,35 @@
                 <div class="before-after">
                     <div class="before-after-box">
                         <h4>优化前</h4>
-                        <div class="code-block" style="margin: 10px 0; padding: 10px; font-size: 0.85em;">
-<span class="keyword">for</span>(<span class="keyword">int</span> i=0; i<100; i++) {
+                        <div class="markdown-body">
+                    <pre><code class="language-java">for (int i = 0; i < 100; i++) {
     result += i * factor;
-}
-                        </div>
-                    </div>
+}</code></pre>
+                </div></div>
                     <div class="before-after-box">
                         <h4>循环展开 ✅</h4>
-                        <div class="code-block" style="margin: 10px 0; padding: 10px; font-size: 0.85em;">
-<span class="keyword">for</span>(<span class="keyword">int</span> i=0; i<100; i+=4) {
+                        <div class="markdown-body">
+                    <pre><code class="language-java">for (int i = 0; i < 100; i += 4) {
     result += i * factor;
-    result += (i+1) * factor;
-    result += (i+2) * factor;
-    result += (i+3) * factor;
-}
-                        </div>
-                    </div>
-                </div>
-            </div>
+    result += (i + 1) * factor;
+    result += (i + 2) * factor;
+    result += (i + 3) * factor;
+}</code></pre>
+                </div></div></div></div>
 
             <div class="optimization-card">
                 <h3>4️⃣ 死代码消除 (Dead Code Elimination)</h3>
                 <p>移除永远不会执行的代码</p>
-                <div class="code-block">
-<span class="keyword">if</span> (<span class="keyword">false</span>) {
-    System.out.<span class="method">println</span>(<span class="string">"这段代码会被JIT删除"</span>);
+                <div class="markdown-body">
+                    <pre><code class="language-java">if (false) {
+    System.out.println("这段代码会被JIT删除");
 }
 
-<span class="keyword">final int</span> MAX = 100;
-<span class="keyword">if</span> (MAX > 200) {  <span class="comment">// 永远不会执行，会被优化掉</span>
+final int MAX = 100;
+if (MAX > 200) {  // 永远不会执行，会被优化掉
     doSomething();
-}
-                </div>
-            </div>
+}</code></pre>
+                </div></div>
 
             <h2 class="section-title">🔧 C1与C2编译器</h2>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -316,49 +332,44 @@
                     <p>• 编译速度快</p>
                     <p>• 优化程度较低</p>
                     <p>• 适合快速启动</p>
-                    <p>• 触发阈值: 1500次</p>
-                </div>
+                    <p>• 触发阈值: 1500次</p></div>
                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px;">
                     <h3 style="margin-bottom: 15px;">C2 编译器 (Server)</h3>
                     <p>• 编译速度较慢</p>
                     <p>• 深度优化</p>
                     <p>• 适合长时间运行</p>
-                    <p>• 触发阈值: 10000次</p>
-                </div>
-            </div>
+                    <p>• 触发阈值: 10000次</p></div></div>
 
             <h2 class="section-title">⚙️ JIT相关参数</h2>
-            <div class="code-block">
-<span class="comment"># 禁用JIT编译（纯解释执行）</span>
+            <div class="markdown-body">
+                    <pre><code class="language-java"># 禁用JIT编译（纯解释执行）
 -Xint
 
-<span class="comment"># 只使用JIT编译（不解释执行）</span>
+# 只使用JIT编译（不解释执行）
 -Xcomp
 
-<span class="comment"># 混合模式（默认）</span>
+# 混合模式（默认）
 -Xmixed
 
-<span class="comment"># 打印JIT编译信息</span>
+# 打印JIT编译信息
 -XX:+PrintCompilation
 
-<span class="comment"># 关闭逃逸分析</span>
+# 关闭逃逸分析
 -XX:-DoEscapeAnalysis
 
-<span class="comment"># 设置编译阈值</span>
+# 设置编译阈值
 -XX:CompileThreshold=10000
 
-<span class="comment"># 禁用分层编译</span>
--XX:-TieredCompilation
-            </div>
+# 禁用分层编译
+-XX:-TieredCompilation</code></pre>
+                </div>
 
             <div style="padding: 20px; background: #d1ecf1; border-radius: 10px; border-left: 4px solid #17a2b8; margin: 20px 0;">
                 <strong>💡 最佳实践：</strong><br>
                 • JIT编译需要预热时间，生产环境注意预热<br>
                 • 使用JMH进行基准测试时要足够的预热迭代<br>
                 • 微服务短生命周期场景可能无法充分利用JIT优化<br>
-                • GraalVM提供AOT编译，适合快速启动场景
-            </div>
-        </div>
+                • GraalVM提供AOT编译，适合快速启动场景</div></div>
     </div>
     <script>
         async function demonstrateJIT() {
