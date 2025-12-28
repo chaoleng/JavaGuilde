@@ -293,26 +293,26 @@
     </div>
 
     <div class="container">
-        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
+        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← <span data-i18n="backToHome">返回主页</span></a>
 
         <div class="header animate__animated animate__fadeInDown">
-            <h1>📖 Java基本知識</h1>
-            <p>Javaプログラミングの基礎を学ぶ</p>
+            <h1>📖 <span data-i18n="javaBasicsPageTitle">Java基本知識</span></h1>
+            <p data-i18n="javaBasicsPageSubtitle">Javaプログラミングの基礎を学ぶ</p>
         </div>
 
         <div class="main-content animate__animated animate__fadeInUp">
 
             <!-- 数据类型 Data Types -->
-            <h2 class="section-title">📊 データ型</h2>
+            <h2 class="section-title" data-i18n="dataTypesTitle">📊 データ型</h2>
 
             <div class="topic-card">
-                <h3>基本データ型 (Primitive Types)</h3>
-                <p>Javaには8つの基本データ型があります</p>
+                <h3 data-i18n="primitiveTypes">基本データ型 (Primitive Types)</h3>
+                <p data-i18n="primitiveTypesDesc">Javaには8つの基本データ型があります</p>
             </div>
 
             <div class="examples-grid">
                 <div class="example-card">
-                    <h4>整数型</h4>
+                    <h4 data-i18n="integerTypes">整数型</h4>
                     <p><strong>byte:</strong> 8ビット (-128 ~ 127)</p>
                     <p><strong>short:</strong> 16ビット (-32,768 ~ 32,767)</p>
                     <p><strong>int:</strong> 32ビット (-2³¹ ~ 2³¹-1)</p>
@@ -320,13 +320,13 @@
                 </div>
 
                 <div class="example-card">
-                    <h4>浮動小数点型</h4>
+                    <h4 data-i18n="floatingTypes">浮動小数点型</h4>
                     <p><strong>float:</strong> 32ビット単精度</p>
                     <p><strong>double:</strong> 64ビット倍精度</p>
                 </div>
 
                 <div class="example-card">
-                    <h4>その他</h4>
+                    <h4 data-i18n="otherTypes">その他</h4>
                     <p><strong>boolean:</strong> true / false</p>
                     <p><strong>char:</strong> 16ビット Unicode文字</p>
                 </div>
@@ -342,11 +342,11 @@ String name = "張三";  // 参照型</code></pre>
                 </div>
 
             <!-- 制御構造 Control Flow -->
-            <h2 class="section-title">🔀 制御フロー</h2>
+            <h2 class="section-title" data-i18n="controlFlowTitle">🔀 制御フロー</h2>
 
             <div class="topic-card">
-                <h3>条件分岐</h3>
-                <p>if-else文とswitch文を使用して条件に応じた処理を実行</p>
+                <h3 data-i18n="conditionalTitle">条件分岐</h3>
+                <p data-i18n="conditionalDesc">if-else文とswitch文を使用して条件に応じた処理を実行</p>
             </div>
 
             <div class="markdown-body">
@@ -361,8 +361,8 @@ if (score >= 90) {
                 </div>
 
             <div class="topic-card">
-                <h3>ループ処理</h3>
-                <p>for、while、do-while文を使用して繰り返し処理を実行</p>
+                <h3 data-i18n="loopTitle">ループ処理</h3>
+                <p data-i18n="loopDesc">for、while、do-while文を使用して繰り返し処理を実行</p>
             </div>
 
             <div class="markdown-body">
@@ -386,11 +386,11 @@ for (int num : numbers) {
                 </div>
 
             <!-- 配列 Arrays -->
-            <h2 class="section-title">📦 配列</h2>
+            <h2 class="section-title" data-i18n="arraysTitle">📦 配列</h2>
 
             <div class="topic-card">
-                <h3>配列の宣言と初期化</h3>
-                <p>同じ型の複数の値を格納するデータ構造</p>
+                <h3 data-i18n="arrayDeclareTitle">配列の宣言と初期化</h3>
+                <p data-i18n="arrayDeclareDesc">同じ型の複数の値を格納するデータ構造</p>
             </div>
 
             <div class="markdown-body">
@@ -411,26 +411,26 @@ int[][] matrix = {
                 </div>
 
             <!-- インタラクティブデモ -->
-            <h2 class="section-title">🎮 インタラクティブデモ</h2>
+            <h2 class="section-title" data-i18n="interactiveDemoTitle">🎮 インタラクティブデモ</h2>
 
             <div class="demo-section">
-                <h3>FizzBuzzプログラム</h3>
-                <p>1から100までの数字を出力し、3の倍数の時は"Fizz"、5の倍数の時は"Buzz"、15の倍数の時は"FizzBuzz"を出力</p>
+                <h3 data-i18n="fizzBuzzTitle">FizzBuzzプログラム</h3>
+                <p data-i18n="fizzBuzzDesc">1から100までの数字を出力し、3の倍数の時は"Fizz"、5の倍数の時は"Buzz"、15の倍数の時は"FizzBuzz"を出力</p>
 
-                <button class="btn" onclick="runFizzBuzz()">▶️ FizzBuzz実行</button>
-                <button class="btn" onclick="clearOutput()">🔄 クリア</button>
+                <button class="btn" onclick="runFizzBuzz()"><span data-i18n="runFizzBuzz">▶️ FizzBuzz実行</span></button>
+                <button class="btn" onclick="clearOutput()"><span data-i18n="clearOutput">🔄 クリア</span></button>
 
-                <div class="demo-output" id="output">出力結果がここに表示されます...</div>
+                <div class="demo-output" id="output"><span data-i18n="outputPlaceholder">出力結果がここに表示されます...</span></div>
             </div>
 
             <!-- 重要なポイント -->
             <div class="info-box">
-                <strong>💡 重要なポイント:</strong><br>
-                • 変数名は意味のある名前を使用する (キャメルケース推奨)<br>
-                • 定数は final キーワードで宣言し、大文字+アンダースコアで命名<br>
-                • 配列のインデックスは0から始まる<br>
-                • 型変換時にデータ損失に注意 (キャストの使用)<br>
-                • null参照に注意 (NullPointerException対策)
+                <strong data-i18n="importantPoints">💡 重要なポイント:</strong><br>
+                <span data-i18n="point1">• 変数名は意味のある名前を使用する (キャメルケース推奨)</span><br>
+                <span data-i18n="point2">• 定数は final キーワードで宣言し、大文字+アンダースコアで命名</span><br>
+                <span data-i18n="point3">• 配列のインデックスは0から始まる</span><br>
+                <span data-i18n="point4">• 型変換時にデータ損失に注意 (キャストの使用)</span><br>
+                <span data-i18n="point5">• null参照に注意 (NullPointerException対策)</span>
             </div>
         </div>
     </div>
@@ -458,7 +458,8 @@ int[][] matrix = {
         }
 
         function clearOutput() {
-            document.getElementById('output').textContent = '出力結果がここに表示されます...';
+            const outputPlaceholder = window.langSwitcher?.translations?.[window.langSwitcher?.currentLang]?.outputPlaceholder || '出力結果がここに表示されます...';
+            document.getElementById('output').innerHTML = `<span data-i18n="outputPlaceholder">${outputPlaceholder}</span>`;
         }
     </script>
 </body>
