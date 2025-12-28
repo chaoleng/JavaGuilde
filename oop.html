@@ -296,50 +296,50 @@
     </div>
 
     <div class="container">
-        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
+        <a href="index.html" class="back-btn animate__animated animate__fadeIn">← <span data-i18n="backToHome">返回主页</span></a>
 
         <div class="header animate__animated animate__fadeInDown">
-            <h1>🎯 オブジェクト指向プログラミング (OOP)</h1>
-            <p>クラス、オブジェクト、継承、ポリモーフィズムの理解</p>
+            <h1>🎯 <span data-i18n="oopPageTitle">オブジェクト指向プログラミング (OOP)</span></h1>
+            <p data-i18n="oopPageSubtitle">クラス、オブジェクト、継承、ポリモーフィズムの理解</p>
         </div>
 
         <div class="main-content animate__animated animate__fadeInUp">
 
             <!-- OOPの4大原則 -->
-            <h2 class="section-title">🏛️ OOPの四大原則</h2>
+            <h2 class="section-title">🏛️ <span data-i18n="fourPillarsTitle">OOPの四大原則</span></h2>
 
             <div class="pillars-grid">
                 <div class="pillar-card">
                     <div class="pillar-icon">📦</div>
-                    <h3>カプセル化</h3>
-                    <p>データとメソッドをクラス内に隠蔽し、外部からのアクセスを制御</p>
+                    <h3 data-i18n="encapsulation">カプセル化</h3>
+                    <p data-i18n="encapsulationDesc">データとメソッドをクラス内に隠蔽し、外部からのアクセスを制御</p>
                 </div>
 
                 <div class="pillar-card">
                     <div class="pillar-icon">🧬</div>
-                    <h3>継承</h3>
-                    <p>既存のクラスから新しいクラスを作成し、コードの再利用を実現</p>
+                    <h3 data-i18n="inheritance">継承</h3>
+                    <p data-i18n="inheritanceDesc">既存のクラスから新しいクラスを作成し、コードの再利用を実現</p>
                 </div>
 
                 <div class="pillar-card">
                     <div class="pillar-icon">🎭</div>
-                    <h3>ポリモーフィズム</h3>
-                    <p>同じインターフェースで異なる実装を持つオブジェクトを扱う</p>
+                    <h3 data-i18n="polymorphism">ポリモーフィズム</h3>
+                    <p data-i18n="polymorphismDesc">同じインターフェースで異なる実装を持つオブジェクトを扱う</p>
                 </div>
 
                 <div class="pillar-card">
                     <div class="pillar-icon">🎨</div>
-                    <h3>抽象化</h3>
-                    <p>複雑な実装の詳細を隠し、重要な特性だけを公開</p>
+                    <h3 data-i18n="abstraction">抽象化</h3>
+                    <p data-i18n="abstractionDesc">複雑な実装の詳細を隠し、重要な特性だけを公開</p>
                 </div>
             </div>
 
             <!-- クラスとオブジェクト -->
-            <h2 class="section-title">📖 クラスとオブジェクト</h2>
+            <h2 class="section-title">📖 <span data-i18n="classAndObjectTitle">クラスとオブジェクト</span></h2>
 
             <div class="concept-card">
-                <h3>クラス (Class)</h3>
-                <p>オブジェクトの設計図・テンプレート。属性(フィールド)と動作(メソッド)を定義します。</p>
+                <h3 data-i18n="classTitle">クラス (Class)</h3>
+                <p data-i18n="classDesc">オブジェクトの設計図・テンプレート。属性(フィールド)と動作(メソッド)を定義します。</p>
             </div>
 
             <div class="markdown-body">
@@ -373,8 +373,8 @@
                 </div>
 
             <div class="concept-card">
-                <h3>オブジェクト (Object)</h3>
-                <p>クラスから生成された実体。newキーワードで作成されます。</p>
+                <h3 data-i18n="objectTitle">オブジェクト (Object)</h3>
+                <p data-i18n="objectDesc">クラスから生成された実体。newキーワードで作成されます。</p>
             </div>
 
             <div class="markdown-body">
@@ -388,11 +388,11 @@ person2.introduce();  // 出力: 私は花子で、23歳です。</code></pre>
                 </div>
 
             <!-- 継承 -->
-            <h2 class="section-title">🧬 継承 (Inheritance)</h2>
+            <h2 class="section-title">🧬 <span data-i18n="inheritanceTitle">継承 (Inheritance)</span></h2>
 
             <div class="concept-card">
-                <h3>継承の概念</h3>
-                <p>既存のクラス(親クラス/スーパークラス)から新しいクラス(子クラス/サブクラス)を作成し、コードを再利用</p>
+                <h3 data-i18n="inheritanceConceptTitle">継承の概念</h3>
+                <p data-i18n="inheritanceConceptDesc">既存のクラス(親クラス/スーパークラス)から新しいクラス(子クラス/サブクラス)を作成し、コードを再利用</p>
             </div>
 
             <div class="markdown-body">
@@ -429,11 +429,11 @@ public class Dog extends Animal {
                 </div>
 
             <!-- ポリモーフィズム -->
-            <h2 class="section-title">🎭 ポリモーフィズム (Polymorphism)</h2>
+            <h2 class="section-title">🎭 <span data-i18n="polymorphismTitle">ポリモーフィズム (Polymorphism)</span></h2>
 
             <div class="concept-card">
-                <h3>ポリモーフィズムとは</h3>
-                <p>同じインターフェースや親クラスの参照で、異なるオブジェクトを扱える能力</p>
+                <h3 data-i18n="polymorphismConceptTitle">ポリモーフィズムとは</h3>
+                <p data-i18n="polymorphismConceptDesc">同じインターフェースや親クラスの参照で、異なるオブジェクトを扱える能力</p>
             </div>
 
             <div class="markdown-body">
@@ -481,13 +481,13 @@ for (Shape shape : shapes) {
                 </div>
 
             <!-- インタラクティブデモ -->
-            <h2 class="section-title">🎮 インタラクティブデモ</h2>
+            <h2 class="section-title">🎮 <span data-i18n="interactiveDemoTitle">インタラクティブデモ</span></h2>
 
             <div class="oop-diagram">
-                <h3>継承階層の可視化</h3>
+                <h3 data-i18n="inheritanceVisualizationTitle">継承階層の可視化</h3>
 
                 <div class="class-box" style="background: #e3f2fd;">
-                    <div class="class-name">Animal (親クラス)</div>
+                    <div class="class-name" data-i18n="animalParentClass">Animal (親クラス)</div>
                     <div class="class-members">
                         <div>+ name: String</div>
                         <div>+ eat(): void</div>
@@ -499,7 +499,7 @@ for (Shape shape : shapes) {
 
                 <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
                     <div class="class-box" style="max-width: 300px; background: #fff3e0;">
-                        <div class="class-name">Dog</div>
+                        <div class="class-name" data-i18n="dogClass">Dog</div>
                         <div class="class-members">
                             <div>+ bark(): void</div>
                             <div>+ eat(): void <em>(override)</em></div>
@@ -507,7 +507,7 @@ for (Shape shape : shapes) {
                     </div>
 
                     <div class="class-box" style="max-width: 300px; background: #f3e5f5;">
-                        <div class="class-name">Cat</div>
+                        <div class="class-name" data-i18n="catClass">Cat</div>
                         <div class="class-members">
                             <div>+ meow(): void</div>
                             <div>+ eat(): void <em>(override)</em></div>
@@ -515,52 +515,44 @@ for (Shape shape : shapes) {
                     </div>
                 </div>
 
-                <button class="btn" onclick="runOOPDemo()">▶️ OOPデモ実行</button>
-                <button class="btn" onclick="clearOutput()">🔄 クリア</button>
+                <button class="btn" onclick="runOOPDemo()"><span data-i18n="runOOPDemo">▶️ OOPデモ実行</span></button>
+                <button class="btn" onclick="clearOutput()"><span data-i18n="clearBtn">🔄 クリア</span></button>
 
-                <div class="demo-output" id="output">出力結果がここに表示されます...</div>
+                <div class="demo-output" id="output"><span data-i18n="outputPlaceholder">出力結果がここに表示されます...</span></div>
             </div>
 
             <!-- 重要なポイント -->
             <div class="info-box">
-                <strong>💡 重要なポイント:</strong><br>
-                • カプセル化: private修飾子でデータを隠蔽、公開APIはpublic<br>
-                • 継承: Javaは単一継承のみ（1つの親クラスのみ）<br>
-                • インターフェース: 複数のインターフェースを実装可能<br>
-                • ポリモーフィズム: 親クラス型の参照で子クラスのインスタンスを扱える<br>
-                • 抽象クラス: インスタンス化不可、abstractメソッドを含む
+                <strong data-i18n="keyPointsTitle">💡 重要なポイント:</strong><br>
+                <span data-i18n="keyPoint1">• カプセル化: private修飾子でデータを隠蔽、公開APIはpublic</span><br>
+                <span data-i18n="keyPoint2">• 継承: Javaは単一継承のみ（1つの親クラスのみ）</span><br>
+                <span data-i18n="keyPoint3">• インターフェース: 複数のインターフェースを実装可能</span><br>
+                <span data-i18n="keyPoint4">• ポリモーフィズム: 親クラス型の参照で子クラスのインスタンスを扱える</span><br>
+                <span data-i18n="keyPoint5">• 抽象クラス: インスタンス化不可、abstractメソッドを含む</span>
             </div>
         </div>
     </div>
 
+    <script src="i18n.js"></script>
     <script>
+        // 初始化语言切换器
+        const languageSwitcher = new LanguageSwitcher();
+
         function runOOPDemo() {
             const output = document.getElementById('output');
-            let result = '=== OOPデモ実行 ===\n\n';
+            const translations = {
+                'zh': '=== 运行OOP演示 ===\n\n【多态演示】\nAnimal dog = new Dog("小狗");\ndog.eat(); // 输出: 小狗 is eating dog food\ndog.sleep(); // 输出: 小狗 is sleeping\n\nAnimal cat = new Cat("小猫");\ncat.eat(); // 输出: 小猫 is eating cat food\ncat.sleep(); // 输出: 小猫 is sleeping\n\n【封装演示】\nPerson person = new Person("太郎", 25);\nperson.getName(); // OK: public getter\n// person.age; // 错误: private field\nperson.setAge(30); // OK: public setter\n\n✅ 演示完成！\nOOP原则提高了代码的可重用性和可维护性。',
+                'ja': '=== OOPデモ実行 ===\n\n【ポリモーフィズムのデモ】\nAnimal dog = new Dog("ポチ");\ndog.eat(); // 出力: ポチ is eating dog food\ndog.sleep(); // 出力: ポチ is sleeping\n\nAnimal cat = new Cat("タマ");\ncat.eat(); // 出力: タマ is eating cat food\ncat.sleep(); // 出力: タマ is sleeping\n\n【カプセル化のデモ】\nPerson person = new Person("太郎", 25);\nperson.getName(); // OK: public getter\n// person.age; // エラー: private field\nperson.setAge(30); // OK: public setter\n\n✅ デモ完了！\nOOPの原則により、コードの再利用性と保守性が向上します。',
+                'en': '=== Running OOP Demo ===\n\n【Polymorphism Demo】\nAnimal dog = new Dog("Buddy");\ndog.eat(); // Output: Buddy is eating dog food\ndog.sleep(); // Output: Buddy is sleeping\n\nAnimal cat = new Cat("Kitty");\ncat.eat(); // Output: Kitty is eating cat food\ncat.sleep(); // Output: Kitty is sleeping\n\n【Encapsulation Demo】\nPerson person = new Person("Taro", 25);\nperson.getName(); // OK: public getter\n// person.age; // Error: private field\nperson.setAge(30); // OK: public setter\n\n✅ Demo Complete!\nOOP principles improve code reusability and maintainability.'
+            };
 
-            result += '【ポリモーフィズムのデモ】\n';
-            result += 'Animal dog = new Dog("ポチ");\n';
-            result += 'dog.eat(); // 出力: ポチ is eating dog food\n';
-            result += 'dog.sleep(); // 出力: ポチ is sleeping\n\n';
-
-            result += 'Animal cat = new Cat("タマ");\n';
-            result += 'cat.eat(); // 出力: タマ is eating cat food\n';
-            result += 'cat.sleep(); // 出力: タマ is sleeping\n\n';
-
-            result += '【カプセル化のデモ】\n';
-            result += 'Person person = new Person("太郎", 25);\n';
-            result += 'person.getName(); // OK: public getter\n';
-            result += '// person.age; // エラー: private field\n';
-            result += 'person.setAge(30); // OK: public setter\n\n';
-
-            result += '✅ デモ完了！\n';
-            result += 'OOPの原則により、コードの再利用性と保守性が向上します。';
-
-            output.textContent = result;
+            const currentLang = localStorage.getItem('preferredLanguage') || 'zh';
+            output.textContent = translations[currentLang];
         }
 
         function clearOutput() {
-            document.getElementById('output').textContent = '出力結果がここに表示されます...';
+            const outputPlaceholder = window.langSwitcher?.translations?.[window.langSwitcher?.currentLang]?.outputPlaceholder || '出力結果がここに表示されます...';
+            document.getElementById('output').innerHTML = `<span data-i18n="outputPlaceholder">${outputPlaceholder}</span>`;
         }
     </script>
 </body>
