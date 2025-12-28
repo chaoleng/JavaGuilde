@@ -194,7 +194,7 @@
             font-size: 1.2em;
         }
 
-        .code-block {
+                .code-block {
             background: #2d2d2d;
             color: #f8f8f2;
             padding: 20px;
@@ -202,10 +202,22 @@
             font-family: 'Courier New', monospace;
             margin: 15px 0;
             font-size: 0.95em;
-            line-height: 1.8;
+            line-height: 1.4;
             white-space: pre;
+            text-align: left;
             overflow-x: auto;
             tab-size: 4;
+            position: relative;
+        }
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .keyword { color: #ff79c6; }
@@ -282,7 +294,30 @@
             background: #764ba2;
             color: white;
         }
-    </style>
+    
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 </head>
 <body>
     <!-- 言語切り替え -->
@@ -291,8 +326,7 @@
             <option value="zh">中文</option>
             <option value="ja">日本語</option>
             <option value="en">English</option>
-        </select>
-    </div>
+        </select></div>
 
 
     <div class="container">
@@ -300,16 +334,14 @@
 
         <div class="header animate__animated animate__fadeInDown">
             <h1>🗑️ <span data-i18n="gcTitle">垃圾回收算法可视化</span></h1>
-            <p>深入理解GC算法原理与垃圾收集器</p>
-        </div>
+            <p>深入理解GC算法原理与垃圾收集器</p></div>
 
         <div class="control-panel animate__animated animate__fadeIn">
             <button class="btn" onclick="demonstrateMarkSweep()">🏷️ 标记-清除</button>
             <button class="btn" onclick="demonstrateCopying()">📋 复制算法</button>
             <button class="btn" onclick="demonstrateMarkCompact()">📦 标记-整理</button>
             <button class="btn" onclick="demonstrateGenerational()">🎯 分代收集</button>
-            <button class="btn" onclick="resetVisualization()">🔄 重置</button>
-        </div>
+            <button class="btn" onclick="resetVisualization()">🔄 重置</button></div>
 
         <div class="main-content animate__animated animate__fadeInUp">
             <!-- GC算法选择 -->
@@ -324,9 +356,7 @@
                         <br><br>
                         ✅ 简单直接<br>
                         ❌ 产生内存碎片<br>
-                        ❌ 标记清除效率不高
-                    </div>
-                </div>
+                        ❌ 标记清除效率不高</div></div>
 
                 <div class="algorithm-card" onclick="demonstrateCopying()">
                     <div class="algorithm-title">📋 复制算法</div>
@@ -336,9 +366,7 @@
                         <br><br>
                         ✅ 无内存碎片<br>
                         ✅ 效率高<br>
-                        ❌ 浪费50%内存
-                    </div>
-                </div>
+                        ❌ 浪费50%内存</div></div>
 
                 <div class="algorithm-card" onclick="demonstrateMarkCompact()">
                     <div class="algorithm-title">📦 标记-整理算法</div>
@@ -348,9 +376,7 @@
                         <br><br>
                         ✅ 无内存碎片<br>
                         ✅ 内存利用率高<br>
-                        ❌ 整理过程开销大
-                    </div>
-                </div>
+                        ❌ 整理过程开销大</div></div>
 
                 <div class="algorithm-card" onclick="demonstrateGenerational()">
                     <div class="algorithm-title">🎯 分代收集算法</div>
@@ -360,9 +386,7 @@
                         <br><br>
                         ✅ 综合各算法优点<br>
                         ✅ 效率最高<br>
-                        ✅ 现代JVM主流方案
-                    </div>
-                </div>
+                        ✅ 现代JVM主流方案</div></div>
             </div>
 
             <!-- 内存可视化 -->
@@ -371,21 +395,16 @@
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color alive"></div>
-                    <span>存活对象</span>
-                </div>
+                    <span>存活对象</span></div>
                 <div class="legend-item">
                     <div class="legend-color dead"></div>
-                    <span>垃圾对象</span>
-                </div>
+                    <span>垃圾对象</span></div>
                 <div class="legend-item">
                     <div class="legend-color marked"></div>
-                    <span>已标记</span>
-                </div>
+                    <span>已标记</span></div>
                 <div class="legend-item">
                     <div class="legend-color empty"></div>
-                    <span>空闲内存</span>
-                </div>
-            </div>
+                    <span>空闲内存</span></div></div>
 
             <div class="memory-visualization">
                 <h3 id="memoryTitle" style="text-align: center; margin-bottom: 20px; color: #d53369;">
@@ -399,17 +418,13 @@
                             <p><strong>Eden区:</strong> 新对象分配</p>
                             <p><strong>Survivor区:</strong> S0 和 S1</p>
                             <p><strong>GC类型:</strong> Minor GC</p>
-                            <p><strong>算法:</strong> 复制算法</p>
-                        </div>
+                            <p><strong>算法:</strong> 复制算法</p></div>
                         <div class="generation-box">
                             <div class="generation-title">老年代 (Old Generation)</div>
                             <p><strong>对象来源:</strong> 长期存活对象</p>
                             <p><strong>GC类型:</strong> Major GC / Full GC</p>
                             <p><strong>算法:</strong> 标记-清除 或 标记-整理</p>
-                            <p><strong>触发条件:</strong> 老年代空间不足</p>
-                        </div>
-                    </div>
-                </div>
+                            <p><strong>触发条件:</strong> 老年代空间不足</p></div></div></div>
             </div>
 
             <!-- 垃圾收集器对比 -->
@@ -420,69 +435,63 @@
                     <h3>Serial GC</h3>
                     <p>单线程收集器</p>
                     <p>适用于单CPU环境</p>
-                    <p>客户端模式默认</p>
-                </div>
+                    <p>客户端模式默认</p></div>
 
                 <div class="collector-card">
                     <h3>Parallel GC</h3>
                     <p>多线程收集器</p>
                     <p>吞吐量优先</p>
-                    <p>服务端模式默认</p>
-                </div>
+                    <p>服务端模式默认</p></div>
 
                 <div class="collector-card">
                     <h3>CMS</h3>
                     <p>并发标记清除</p>
                     <p>低延迟优先</p>
-                    <p>老年代收集器</p>
-                </div>
+                    <p>老年代收集器</p></div>
 
                 <div class="collector-card">
                     <h3>G1 GC</h3>
                     <p>面向服务端应用</p>
                     <p>可预测停顿时间</p>
-                    <p>JDK 9+默认</p>
-                </div>
+                    <p>JDK 9+默认</p></div>
 
                 <div class="collector-card">
                     <h3>ZGC</h3>
                     <p>低延迟收集器</p>
                     <p>停顿时间<10ms</p>
-                    <p>JDK 11+</p>
-                </div>
+                    <p>JDK 11+</p></div>
 
                 <div class="collector-card">
                     <h3>Shenandoah</h3>
                     <p>低停顿时间</p>
                     <p>并发整理</p>
-                    <p>JDK 12+</p>
-                </div>
+                    <p>JDK 12+</p></div>
             </div>
 
             <!-- GC参数配置 -->
             <h2 class="section-title">⚙️ 常用GC参数</h2>
 
-            <div class="code-block">
-<span class="comment"># 选择垃圾收集器</span>
--XX:+UseSerialGC          <span class="comment">// Serial GC</span>
--XX:+UseParallelGC        <span class="comment">// Parallel GC</span>
--XX:+UseConcMarkSweepGC   <span class="comment">// CMS</span>
--XX:+UseG1GC              <span class="comment">// G1 GC</span>
--XX:+UseZGC               <span class="comment">// ZGC (JDK 11+)</span>
+            <div class="markdown-body">
+                    <pre><code class="language-java"># 选择垃圾收集器
+-XX:+UseSerialGC          // Serial GC
+-XX:+UseParallelGC        // Parallel GC
+-XX:+UseConcMarkSweepGC   // CMS
+-XX:+UseG1GC              // G1 GC
+-XX:+UseZGC               // ZGC (JDK 11+)
 
-<span class="comment"># 堆内存设置</span>
--Xms2g                    <span class="comment">// 初始堆大小</span>
--Xmx4g                    <span class="comment">// 最大堆大小</span>
--Xmn1g                    <span class="comment">// 新生代大小</span>
+# 堆内存设置
+-Xms2g                    // 初始堆大小
+-Xmx4g                    // 最大堆大小
+-Xmn1g                    // 新生代大小
 
-<span class="comment"># GC日志</span>
--Xlog:gc*:file=gc.log     <span class="comment">// GC日志输出 (JDK 9+)</span>
--XX:+PrintGCDetails       <span class="comment">// 打印GC详情 (JDK 8)</span>
+# GC日志
+-Xlog:gc*:file=gc.log     // GC日志输出 (JDK 9+)
+-XX:+PrintGCDetails       // 打印GC详情 (JDK 8)
 
-<span class="comment"># G1 GC调优</span>
--XX:MaxGCPauseMillis=200  <span class="comment">// 目标停顿时间</span>
--XX:G1HeapRegionSize=16m  <span class="comment">// Region大小</span>
-            </div>
+# G1 GC调优
+-XX:MaxGCPauseMillis=200  // 目标停顿时间
+-XX:G1HeapRegionSize=16m  // Region大小</code></pre>
+                </div>
 
             <div class="info-box">
                 <strong>💡 GC调优建议：</strong><br>
@@ -501,31 +510,25 @@
                     <div class="generation-title">1️⃣ 年龄达到阈值</div>
                     <p>对象在Survivor区每经历一次Minor GC，年龄+1</p>
                     <p>默认年龄15晋升到老年代</p>
-                    <p>参数: -XX:MaxTenuringThreshold</p>
-                </div>
+                    <p>参数: -XX:MaxTenuringThreshold</p></div>
 
                 <div class="generation-box">
                     <div class="generation-title">2️⃣ 大对象直接进入</div>
                     <p>大对象直接在老年代分配</p>
                     <p>避免在Eden和Survivor间复制</p>
-                    <p>参数: -XX:PretenureSizeThreshold</p>
-                </div>
+                    <p>参数: -XX:PretenureSizeThreshold</p></div>
 
                 <div class="generation-box">
                     <div class="generation-title">3️⃣ 动态年龄判断</div>
                     <p>Survivor中相同年龄对象大小总和</p>
                     <p>超过Survivor空间一半</p>
-                    <p>该年龄及以上对象晋升老年代</p>
-                </div>
+                    <p>该年龄及以上对象晋升老年代</p></div>
 
                 <div class="generation-box">
                     <div class="generation-title">4️⃣ 空间分配担保</div>
                     <p>Minor GC前检查老年代空间</p>
                     <p>确保晋升对象有足够空间</p>
-                    <p>失败则触发Full GC</p>
-                </div>
-            </div>
-        </div>
+                    <p>失败则触发Full GC</p></div></div></div>
     </div>
 
     <script>

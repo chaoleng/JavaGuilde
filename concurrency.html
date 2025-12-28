@@ -79,7 +79,7 @@
             margin-bottom: 8px;
             font-size: 1.2em;
         }
-        .code-block {
+                .code-block {
             background: #2d2d2d;
             color: #f8f8f2;
             padding: 20px;
@@ -87,10 +87,22 @@
             font-family: 'Courier New', monospace;
             margin: 15px 0;
             font-size: 0.95em;
-            line-height: 1.8;
+            line-height: 1.4;
             white-space: pre;
+            text-align: left;
             overflow-x: auto;
             tab-size: 4;
+            position: relative;
+        }
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
+            text-transform: uppercase;
         }
         .keyword { color: #ff79c6; }
         .type { color: #8be9fd; }
@@ -220,7 +232,30 @@
             background: #764ba2;
             color: white;
         }
-    </style>
+    
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
 </head>
 <body>
     <!-- 言語切り替え -->
@@ -229,71 +264,61 @@
             <option value="zh">中文</option>
             <option value="ja">日本語</option>
             <option value="en">English</option>
-        </select>
-    </div>
+        </select></div>
 
 
     <div class="container">
         <a href="index.html" class="back-btn animate__animated animate__fadeIn">← 返回主页</a>
         <div class="header animate__animated animate__fadeInDown">
             <h1>🔀 <span data-i18n="concurrencyTitle">多线程与并发</span></h1>
-            <p>深入理解Java并发编程与JMM</p>
-        </div>
+            <p>深入理解Java并发编程与JMM</p></div>
         <div class="control-panel animate__animated animate__fadeIn">
             <button class="btn" onclick="demonstrateThreadStates()">🔄 线程状态转换</button>
             <button class="btn" onclick="demonstrateThreads()">🧵 多线程执行</button>
-            <button class="btn" onclick="reset()">🔄 重置</button>
-        </div>
+            <button class="btn" onclick="reset()">🔄 重置</button></div>
         <div class="main-content animate__animated animate__fadeInUp">
             <h2 class="section-title">🔄 线程生命周期与状态转换</h2>
             <div class="thread-states" id="threadStates">
                 <div class="state-card" data-state="new">
                     <div class="state-icon">🆕</div>
                     <div class="state-name">NEW</div>
-                    <p>线程已创建但未启动</p>
-                </div>
+                    <p>线程已创建但未启动</p></div>
                 <div class="state-card" data-state="runnable">
                     <div class="state-icon">▶️</div>
                     <div class="state-name">RUNNABLE</div>
-                    <p>可运行状态(就绪/运行)</p>
-                </div>
+                    <p>可运行状态(就绪/运行)</p></div>
                 <div class="state-card" data-state="blocked">
                     <div class="state-icon">🔒</div>
                     <div class="state-name">BLOCKED</div>
-                    <p>等待获取锁</p>
-                </div>
+                    <p>等待获取锁</p></div>
                 <div class="state-card" data-state="waiting">
                     <div class="state-icon">⏸️</div>
                     <div class="state-name">WAITING</div>
-                    <p>无限期等待</p>
-                </div>
+                    <p>无限期等待</p></div>
                 <div class="state-card" data-state="timed_waiting">
                     <div class="state-icon">⏱️</div>
                     <div class="state-name">TIMED_WAITING</div>
-                    <p>限时等待</p>
-                </div>
+                    <p>限时等待</p></div>
                 <div class="state-card" data-state="terminated">
                     <div class="state-icon">✅</div>
                     <div class="state-name">TERMINATED</div>
-                    <p>线程执行完毕</p>
-                </div>
-            </div>
+                    <p>线程执行完毕</p></div></div>
 
-            <div class="code-block">
-<span class="keyword">public class</span> <span class="type">ThreadLifecycle</span> {
-    <span class="keyword">public static void</span> <span class="method">main</span>(<span class="type">String</span>[] args) {
-        <span class="type">Thread</span> t = <span class="keyword">new</span> <span class="type">Thread</span>(() -> {
-            <span class="keyword">try</span> {
-                <span class="type">Thread</span>.<span class="method">sleep</span>(1000);  <span class="comment">// TIMED_WAITING</span>
-            } <span class="keyword">catch</span> (<span class="type">InterruptedException</span> e) {}
+            <div class="markdown-body">
+                    <pre><code class="language-java">public class ThreadLifecycle {
+    public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(1000);  // TIMED_WAITING
+            } catch (InterruptedException e) {}
         });
 
-        System.out.<span class="method">println</span>(t.<span class="method">getState</span>());  <span class="comment">// NEW</span>
-        t.<span class="method">start</span>();
-        System.out.<span class="method">println</span>(t.<span class="method">getState</span>());  <span class="comment">// RUNNABLE</span>
+        System.out.println(t.getState());  // NEW
+        t.start();
+        System.out.println(t.getState());  // RUNNABLE
     }
-}
-            </div>
+}</code></pre>
+                </div>
 
             <h2 class="section-title">🧵 多线程并发执行</h2>
             <div class="thread-visualization" id="threadViz">
@@ -302,23 +327,19 @@
                     <div class="thread-progress">
                         <div class="thread-progress-bar" id="thread1"></div>
                     </div>
-                    <p>状态: <span id="state1">NEW</span></p>
-                </div>
+                    <p>状态: <span id="state1">NEW</span></p></div>
                 <div class="thread-box">
                     <div class="thread-name">Thread-2</div>
                     <div class="thread-progress">
                         <div class="thread-progress-bar" id="thread2"></div>
                     </div>
-                    <p>状态: <span id="state2">NEW</span></p>
-                </div>
+                    <p>状态: <span id="state2">NEW</span></p></div>
                 <div class="thread-box">
                     <div class="thread-name">Thread-3</div>
                     <div class="thread-progress">
                         <div class="thread-progress-bar" id="thread3"></div>
                     </div>
-                    <p>状态: <span id="state3">NEW</span></p>
-                </div>
-            </div>
+                    <p>状态: <span id="state3">NEW</span></p></div></div>
 
             <h2 class="section-title">🧠 Java内存模型 (JMM)</h2>
             <div class="jmm-diagram">
@@ -327,166 +348,145 @@
                     <div class="memory-box">
                         <h4>线程A工作内存</h4>
                         <p>变量副本</p>
-                        <p>count = 10</p>
-                    </div>
+                        <p>count = 10</p></div>
                     <div class="memory-box" style="border-color: #f5576c; background: linear-gradient(135deg, #fff5f7 0%, #ffebee 100%);">
                         <h4>主内存 (堆)</h4>
                         <p>所有线程共享</p>
                         <p>count = 10</p>
                         <p style="margin-top: 10px; font-size: 0.9em;">
                             ↕️ read / write / lock / unlock
-                        </p>
-                    </div>
+                        </p></div>
                     <div class="memory-box">
                         <h4>线程B工作内存</h4>
                         <p>变量副本</p>
-                        <p>count = 10</p>
-                    </div>
-                </div>
-            </div>
+                        <p>count = 10</p></div></div></div>
 
             <div class="info-box warning">
                 <strong>⚠️ 可见性问题：</strong><br>
                 一个线程修改了变量，其他线程可能无法立即看到修改。<br>
-                解决方案: 使用 <code>volatile</code>、<code>synchronized</code> 或 <code>Lock</code>
-            </div>
+                解决方案: 使用 <code>volatile</code>、<code>synchronized</code> 或 <code>Lock</code></div>
 
             <h2 class="section-title">🔒 同步机制</h2>
 
             <div class="sync-demo">
                 <h3 style="margin-bottom: 20px;">synchronized关键字</h3>
-                <div class="code-block" style="background: #1e1e1e; margin: 0;">
-<span class="keyword">public class</span> <span class="type">Counter</span> {
-    <span class="keyword">private int</span> count = 0;
+                <div class="markdown-body">
+                    <pre><code class="language-java">public class Counter {
+    private int count = 0;
 
-    <span class="comment">// 同步方法</span>
-    <span class="keyword">public synchronized void</span> <span class="method">increment</span>() {
+    // 同步方法
+    public synchronized void increment() {
         count++;
     }
 
-    <span class="comment">// 同步代码块</span>
-    <span class="keyword">public void</span> <span class="method">add</span>(<span class="keyword">int</span> value) {
-        <span class="keyword">synchronized</span>(<span class="keyword">this</span>) {
+    // 同步代码块
+    public void add(int value) {
+        synchronized(this) {
             count += value;
         }
     }
-}
-                </div>
-            </div>
+}</code></pre>
+                </div></div>
 
             <div class="lock-visualization">
                 <div class="lock-item">
                     <div class="lock-icon">🔓</div>
                     <h4>无锁 / 偏向锁</h4>
-                    <p>性能最优</p>
-                </div>
+                    <p>性能最优</p></div>
                 <div class="lock-icon" style="font-size: 2em;">→</div>
                 <div class="lock-item">
                     <div class="lock-icon">🔐</div>
                     <h4>轻量级锁</h4>
-                    <p>CAS自旋</p>
-                </div>
+                    <p>CAS自旋</p></div>
                 <div class="lock-icon" style="font-size: 2em;">→</div>
                 <div class="lock-item">
                     <div class="lock-icon">🔒</div>
                     <h4>重量级锁</h4>
-                    <p>操作系统互斥量</p>
-                </div>
-            </div>
+                    <p>操作系统互斥量</p></div></div>
 
             <h2 class="section-title">⚡ volatile关键字</h2>
-            <div class="code-block">
-<span class="keyword">public class</span> <span class="type">VolatileDemo</span> {
-    <span class="keyword">private volatile boolean</span> flag = <span class="keyword">true</span>;
+            <div class="markdown-body">
+                    <pre><code class="language-java">public class VolatileDemo {
+    private volatile boolean flag = true;
 
-    <span class="keyword">public void</span> <span class="method">run</span>() {
-        <span class="keyword">while</span>(flag) {  <span class="comment">// 保证可见性</span>
-            <span class="comment">// do something</span>
+    public void run() {
+        while(flag) {  // 保证可见性
+            // do something
         }
     }
 
-    <span class="keyword">public void</span> <span class="method">stop</span>() {
-        flag = <span class="keyword">false</span>;  <span class="comment">// 修改立即对其他线程可见</span>
+    public void stop() {
+        flag = false;  // 修改立即对其他线程可见
     }
-}
-            </div>
+}</code></pre>
+                </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
                 <div class="info-box success">
                     <strong>✅ volatile保证：</strong><br>
                     • 可见性: 写操作立即刷新到主内存<br>
                     • 有序性: 禁止指令重排序<br>
-                    • 轻量级: 不会引起线程上下文切换
-                </div>
+                    • 轻量级: 不会引起线程上下文切换</div>
                 <div class="info-box warning">
                     <strong>❌ volatile不保证：</strong><br>
                     • 原子性: count++ 不是原子操作<br>
                     • 复合操作的线程安全<br>
-                    • 需要原子性用AtomicInteger
-                </div>
-            </div>
+                    • 需要原子性用AtomicInteger</div></div>
 
             <h2 class="section-title">🛠️ 并发工具类</h2>
-            <div class="code-block">
-<span class="keyword">import</span> java.util.concurrent.*;
+            <div class="markdown-body">
+                    <pre><code class="language-java">import java.util.concurrent.*;
 
-<span class="comment">// 1. ReentrantLock - 可重入锁</span>
-<span class="type">ReentrantLock</span> lock = <span class="keyword">new</span> <span class="type">ReentrantLock</span>();
-lock.<span class="method">lock</span>();
-<span class="keyword">try</span> {
-    <span class="comment">// 临界区代码</span>
-} <span class="keyword">finally</span> {
-    lock.<span class="method">unlock</span>();
+// 1. ReentrantLock - 可重入锁
+ReentrantLock lock = new ReentrantLock();
+lock.lock();
+try {
+    // 临界区代码
+} finally {
+    lock.unlock();
 }
 
-<span class="comment">// 2. CountDownLatch - 倒计时门栓</span>
-<span class="type">CountDownLatch</span> latch = <span class="keyword">new</span> <span class="type">CountDownLatch</span>(3);
-latch.<span class="method">countDown</span>();
-latch.<span class="method">await</span>();  <span class="comment">// 等待计数归零</span>
+// 2. CountDownLatch - 倒计时门栓
+CountDownLatch latch = new CountDownLatch(3);
+latch.countDown();
+latch.await();  // 等待计数归零
 
-<span class="comment">// 3. CyclicBarrier - 循环屏障</span>
-<span class="type">CyclicBarrier</span> barrier = <span class="keyword">new</span> <span class="type">CyclicBarrier</span>(3);
-barrier.<span class="method">await</span>();  <span class="comment">// 等待所有线程到达</span>
+// 3. CyclicBarrier - 循环屏障
+CyclicBarrier barrier = new CyclicBarrier(3);
+barrier.await();  // 等待所有线程到达
 
-<span class="comment">// 4. Semaphore - 信号量</span>
-<span class="type">Semaphore</span> semaphore = <span class="keyword">new</span> <span class="type">Semaphore</span>(5);
-semaphore.<span class="method">acquire</span>();  <span class="comment">// 获取许可</span>
-semaphore.<span class="method">release</span>();  <span class="comment">// 释放许可</span>
+// 4. Semaphore - 信号量
+Semaphore semaphore = new Semaphore(5);
+semaphore.acquire();  // 获取许可
+semaphore.release();  // 释放许可
 
-<span class="comment">// 5. ThreadPoolExecutor - 线程池</span>
-<span class="type">ExecutorService</span> executor = <span class="type">Executors</span>.<span class="method">newFixedThreadPool</span>(10);
-executor.<span class="method">submit</span>(() -> {
-    System.out.<span class="method">println</span>(<span class="string">"Task executing"</span>);
-});
-            </div>
+// 5. ThreadPoolExecutor - 线程池
+ExecutorService executor = Executors.newFixedThreadPool(10);
+executor.submit(() -> {
+    System.out.println("Task executing");
+});</code></pre>
+                </div>
 
             <h2 class="section-title">🎯 happens-before原则</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
                 <div class="info-box info">
                     <strong>1️⃣ 程序顺序规则</strong><br>
-                    单线程内，按代码顺序执行
-                </div>
+                    单线程内，按代码顺序执行</div>
                 <div class="info-box info">
                     <strong>2️⃣ volatile变量规则</strong><br>
-                    写操作 happens-before 后续读
-                </div>
+                    写操作 happens-before 后续读</div>
                 <div class="info-box info">
                     <strong>3️⃣ 锁规则</strong><br>
-                    unlock happens-before lock
-                </div>
+                    unlock happens-before lock</div>
                 <div class="info-box info">
                     <strong>4️⃣ 线程启动规则</strong><br>
-                    start() happens-before 线程内操作
-                </div>
+                    start() happens-before 线程内操作</div>
                 <div class="info-box info">
                     <strong>5️⃣ 线程终止规则</strong><br>
-                    线程内操作 happens-before join()
-                </div>
+                    线程内操作 happens-before join()</div>
                 <div class="info-box info">
                     <strong>6️⃣ 传递性</strong><br>
-                    A hb B, B hb C → A hb C
-                </div>
-            </div>
+                    A hb B, B hb C → A hb C</div></div>
 
             <div class="info-box success" style="margin-top: 30px;">
                 <strong>💡 最佳实践：</strong><br>
@@ -494,9 +494,7 @@ executor.<span class="method">submit</span>(() -> {
                 • 减少锁的粒度和持有时间<br>
                 • 使用线程池管理线程,避免频繁创建销毁<br>
                 • 理解happens-before规则,正确使用volatile<br>
-                • 避免死锁: 固定加锁顺序、使用tryLock、超时机制
-            </div>
-        </div>
+                • 避免死锁: 固定加锁顺序、使用tryLock、超时机制</div></div>
     </div>
     <script>
         const states = ['new', 'runnable', 'blocked', 'waiting', 'timed_waiting', 'terminated'];

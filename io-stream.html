@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="ioTitle">Java IO流操作 - 可视化讲解</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin: 40px 0 20px 0;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        p {
+            margin: 15px 0;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .language-switcher select {
+            padding: 8px 15px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            background: white;
+            color: #667eea;
+        }
+
+        .stream-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stream-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stream-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .stream-card h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 0.95em;
+            line-height: 1.4;
+            white-space: pre;
+            overflow-x: auto;
+            tab-size: 4;
+            position: relative;
+            text-align: left;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.75em;
+            color: #6272a4;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .keyword { color: #ff79c6; font-weight: bold; }
+        .type { color: #8be9fd; }
+        .method { color: #50fa7b; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; font-style: italic; }
+        .number { color: #bd93f9; }
+
+        .visualization {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+
+        .stream-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            min-width: 150px;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        .demo-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .demo-section h3 {
+            color: white;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .demo-button {
+            background: white;
+            color: #764ba2;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .demo-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .demo-output {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .file-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin: 30px 0;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            .container { padding: 20px; }
+            .stream-flow { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    
+        /* Prism.js code block styling */
+        pre {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.8;
+            text-align: left;
+        }
+</style>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+</head>
+<body>
+    <div class="language-switcher">
+        <select id="language-select">
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>📁 <span data-i18n="ioTitle">Java IO流操作</span></h1>
+            <p data-i18n="ioSubtitle">文件读写与数据流的可视化讲解</p>
+        </header>
+
+        <!-- IO流类型概览 -->
+        <section class="animate__animated animate__fadeInUp">
+            <h2 data-i18n="ioTypesTitle">IO流类型概览</h2>
+            <p data-i18n="ioTypesDesc">Java的IO流分为字节流和字符流，每种流又分为输入流和输出流。</p>
+
+            <div class="stream-types">
+                <div class="stream-card animate__animated animate__zoomIn">
+                    <div class="file-icon">📥</div>
+                    <h3 data-i18n="byteStreamTitle">字节流</h3>
+                    <p data-i18n="byteStreamDesc">InputStream / OutputStream<br>处理二进制数据</p>
+                </div>
+                <div class="stream-card animate__animated animate__zoomIn" style="animation-delay: 0.1s;">
+                    <div class="file-icon">📝</div>
+                    <h3 data-i18n="charStreamTitle">字符流</h3>
+                    <p data-i18n="charStreamDesc">Reader / Writer<br>处理文本数据</p>
+                </div>
+                <div class="stream-card animate__animated animate__zoomIn" style="animation-delay: 0.2s;">
+                    <div class="file-icon">⚡</div>
+                    <h3 data-i18n="bufferedStreamTitle">缓冲流</h3>
+                    <p data-i18n="bufferedStreamDesc">BufferedInputStream / BufferedReader<br>提高IO效率</p>
+                </div>
+                <div class="stream-card animate__animated animate__zoomIn" style="animation-delay: 0.3s;">
+                    <div class="file-icon">💾</div>
+                    <h3 data-i18n="objectStreamTitle">对象流</h3>
+                    <p data-i18n="objectStreamDesc">ObjectInputStream / ObjectOutputStream<br>序列化对象</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 字节流示例 -->
+        <section class="animate__animated animate__fadeInUp">
+            <h2 data-i18n="byteStreamExampleTitle">字节流示例</h2>
+            <p data-i18n="byteStreamExampleDesc">使用FileInputStream和FileOutputStream读写文件。</p>
+
+            <div class="visualization">
+                <div class="stream-flow">
+                    <div class="flow-box">
+                        <div class="file-icon">📄</div>
+                        <div data-i18n="sourceFile">源文件</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div>FileInputStream</div>
+                        <div style="font-size: 0.9em; color: #666;" data-i18n="readBytes">读取字节</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div>FileOutputStream</div>
+                        <div style="font-size: 0.9em; color: #666;" data-i18n="writeBytes">写入字节</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div class="file-icon">📄</div>
+                        <div data-i18n="targetFile">目标文件</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// ファイルのコピー（バイトストリーム）
+try (FileInputStream fis = new FileInputStream("source.txt");
+     FileOutputStream fos = new FileOutputStream("target.txt")) {
+
+    byte[] buffer = new byte[1024];
+    int length;
+
+    while ((length = fis.read(buffer)) != -1) {
+        fos.write(buffer, 0, length);
+    }
+
+} catch (IOException e) {
+    e.printStackTrace();
+}</code></pre>
+                </div>
+        </section>
+
+        <!-- 字符流示例 -->
+        <section class="animate__animated animate__fadeInUp">
+            <h2 data-i18n="charStreamExampleTitle">字符流示例</h2>
+            <p data-i18n="charStreamExampleDesc">使用FileReader和FileWriter读写文本文件。</p>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// テキストファイルの読み書き（文字ストリーム）
+try (FileReader reader = new FileReader("input.txt");
+     FileWriter writer = new FileWriter("output.txt")) {
+
+    char[] buffer = new char[1024];
+    int length;
+
+    while ((length = reader.read(buffer)) != -1) {
+        writer.write(buffer, 0, length);
+    }
+
+} catch (IOException e) {
+    e.printStackTrace();
+}</code></pre>
+                </div>
+        </section>
+
+        <!-- 缓冲流示例 -->
+        <section class="animate__animated animate__fadeInUp">
+            <h2 data-i18n="bufferedStreamExampleTitle">缓冲流示例</h2>
+            <p data-i18n="bufferedStreamExampleDesc">使用BufferedReader和BufferedWriter提高IO效率。</p>
+
+            <div class="visualization">
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="display: inline-block; text-align: left;">
+                        <div style="margin: 10px 0;">
+                            <span style="background: #ff6b6b; padding: 5px 10px; border-radius: 5px; color: white;">
+                                <span data-i18n="noBuffer">无缓冲</span>: <span data-i18n="readOneByte">每次读1字节</span> = <span data-i18n="slowSpeed">慢</span> 🐌
+                            </span>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <span style="background: #51cf66; padding: 5px 10px; border-radius: 5px; color: white;">
+                                <span data-i18n="withBuffer">有缓冲</span>: <span data-i18n="readMultipleBytes">一次读8192字节</span> = <span data-i18n="fastSpeed">快</span> 🚀
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// バッファ付きテキスト読み込み
+try (BufferedReader reader = new BufferedReader(
+        new FileReader("data.txt"))) {
+
+    String line;
+    while ((line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+
+} catch (IOException e) {
+    e.printStackTrace();
+}
+
+// バッファ付きテキスト書き込み
+try (BufferedWriter writer = new BufferedWriter(
+        new FileWriter("output.txt"))) {
+
+    writer.write("Hello, World!");
+    writer.newLine(); // 改行を追加
+    writer.write("Second line");
+
+} catch (IOException e) {
+    e.printStackTrace();
+}</code></pre>
+                </div>
+        </section>
+
+        <!-- 对象序列化 -->
+        <section class="animate__animated animate__fadeInUp">
+            <h2 data-i18n="serializationTitle">对象序列化</h2>
+            <p data-i18n="serializationDesc">将对象转换为字节流进行存储或传输。</p>
+
+            <div class="visualization">
+                <div class="stream-flow">
+                    <div class="flow-box">
+                        <div style="font-size: 2em;">🎯</div>
+                        <div data-i18n="javaObject">Java对象</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div>ObjectOutputStream</div>
+                        <div style="font-size: 0.9em; color: #666;" data-i18n="serialize">序列化</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div style="font-size: 2em;">💾</div>
+                        <div data-i18n="byteStream">字节流</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 20px 0; font-size: 2em; color: #667eea;">⇅</div>
+                <div class="stream-flow">
+                    <div class="flow-box">
+                        <div style="font-size: 2em;">🎯</div>
+                        <div data-i18n="javaObject">Java对象</div>
+                    </div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-box">
+                        <div>ObjectInputStream</div>
+                        <div style="font-size: 0.9em; color: #666;" data-i18n="deserialize">反序列化</div>
+                    </div>
+                    <div class="flow-arrow">←</div>
+                    <div class="flow-box">
+                        <div style="font-size: 2em;">💾</div>
+                        <div data-i18n="byteStream">字节流</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="markdown-body">
+                    <pre><code class="language-java">// シリアライズ可能なクラス
+public class Person implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+
+// オブジェクトの書き込み（シリアライズ）
+try (ObjectOutputStream oos = new ObjectOutputStream(
+        new FileOutputStream("person.dat"))) {
+
+    Person person = new Person("太郎", 25);
+    oos.writeObject(person);
+
+} catch (IOException e) {
+    e.printStackTrace();
+}
+
+// オブジェクトの読み込み（デシリアライズ）
+try (ObjectInputStream ois = new ObjectInputStream(
+        new FileInputStream("person.dat"))) {
+
+    Person person = (Person) ois.readObject();
+    System.out.println(person.getName() + ", " + person.getAge());
+
+} catch (IOException | ClassNotFoundException e) {
+    e.printStackTrace();
+}</code></pre>
+                </div>
+        </section>
+
+        <!-- 交互式演示 -->
+        <section class="demo-section animate__animated animate__fadeInUp">
+            <h3 data-i18n="interactiveDemoTitle">📝 交互式演示：文件读写模拟</h3>
+            <p data-i18n="interactiveDemoDesc">模拟文件的读取和写入操作。</p>
+
+            <div class="demo-controls">
+                <button class="demo-button" onclick="simulateWrite()">
+                    <span data-i18n="writeFileBtn">写入文件</span> 📝
+                </button>
+                <button class="demo-button" onclick="simulateRead()">
+                    <span data-i18n="readFileBtn">读取文件</span> 📖
+                </button>
+                <button class="demo-button" onclick="simulateBuffered()">
+                    <span data-i18n="bufferedReadBtn">缓冲读取</span> ⚡
+                </button>
+                <button class="demo-button" onclick="clearDemo()">
+                    <span data-i18n="clearBtn">清空</span> 🗑️
+                </button>
+            </div>
+
+            <div class="demo-output" id="output"></div>
+        </section>
+
+        <a href="index.html" class="back-button">← <span data-i18n="backToHome">返回首页</span></a>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script>
+        // 初始化语言切换器
+        const languageSwitcher = new LanguageSwitcher();
+
+        let fileContent = "";
+
+        function simulateWrite() {
+            const output = document.getElementById('output');
+            const translations = {
+                'zh': '正在写入文件...\n文件内容:\n"Hello, Java IO!\nThis is a test file.\n学习Java IO流操作。"\n\n✅ 写入成功！文件大小: 67 字节',
+                'ja': 'ファイルを書き込み中...\nファイル内容:\n"Hello, Java IO!\nThis is a test file.\nJava IOストリーム操作を学習。"\n\n✅ 書き込み成功！ファイルサイズ: 67 バイト',
+                'en': 'Writing to file...\nFile content:\n"Hello, Java IO!\nThis is a test file.\nLearning Java IO stream operations."\n\n✅ Write successful! File size: 67 bytes'
+            };
+
+            fileContent = "Hello, Java IO!\nThis is a test file.\n";
+
+            const currentLang = localStorage.getItem('preferred-language') || 'zh';
+            output.textContent = translations[currentLang];
+            output.className = 'demo-output animate__animated animate__fadeIn';
+        }
+
+        function simulateRead() {
+            const output = document.getElementById('output');
+
+            if (!fileContent) {
+                const translations = {
+                    'zh': '❌ 错误：文件不存在！\n请先写入文件。',
+                    'ja': '❌ エラー：ファイルが存在しません！\n先にファイルを書き込んでください。',
+                    'en': '❌ Error: File does not exist!\nPlease write to file first.'
+                };
+                const currentLang = localStorage.getItem('preferred-language') || 'zh';
+                output.textContent = translations[currentLang];
+                return;
+            }
+
+            const translations = {
+                'zh': '正在读取文件...\n\n读取方式: FileInputStream\n缓冲区大小: 1024 字节\n\n读取内容:\n',
+                'ja': 'ファイルを読み込み中...\n\n読み込み方式: FileInputStream\nバッファサイズ: 1024 バイト\n\n読み込み内容:\n',
+                'en': 'Reading file...\n\nRead method: FileInputStream\nBuffer size: 1024 bytes\n\nContent read:\n'
+            };
+
+            const currentLang = localStorage.getItem('preferred-language') || 'zh';
+            let result = translations[currentLang];
+
+            for (let i = 0; i < fileContent.length; i++) {
+                setTimeout(() => {
+                    result += fileContent[i];
+                    output.textContent = result;
+                }, i * 50);
+            }
+
+            setTimeout(() => {
+                const successMsg = {
+                    'zh': '\n\n✅ 读取完成！',
+                    'ja': '\n\n✅ 読み込み完了！',
+                    'en': '\n\n✅ Read complete!'
+                };
+                output.textContent = result + successMsg[currentLang];
+            }, fileContent.length * 50);
+        }
+
+        function simulateBuffered() {
+            const output = document.getElementById('output');
+
+            if (!fileContent) {
+                const translations = {
+                    'zh': '❌ 错误：文件不存在！\n请先写入文件。',
+                    'ja': '❌ エラー：ファイルが存在しません！\n先にファイルを書き込んでください。',
+                    'en': '❌ Error: File does not exist!\nPlease write to file first.'
+                };
+                const currentLang = localStorage.getItem('preferred-language') || 'zh';
+                output.textContent = translations[currentLang];
+                return;
+            }
+
+            const translations = {
+                'zh': '正在使用缓冲流读取...\n\n读取方式: BufferedReader\n缓冲区大小: 8192 字节\n读取速度: 🚀 快速！\n\n内容:\n',
+                'ja': 'バッファストリームで読み込み中...\n\n読み込み方式: BufferedReader\nバッファサイズ: 8192 バイト\n読み込み速度: 🚀 高速！\n\n内容:\n',
+                'en': 'Reading with buffered stream...\n\nRead method: BufferedReader\nBuffer size: 8192 bytes\nRead speed: 🚀 Fast!\n\nContent:\n'
+            };
+
+            const currentLang = localStorage.getItem('preferred-language') || 'zh';
+
+            setTimeout(() => {
+                const successMsg = {
+                    'zh': '\n\n✅ 缓冲读取完成！\n性能提升: 10-50倍',
+                    'ja': '\n\n✅ バッファ読み込み完了！\nパフォーマンス向上: 10-50倍',
+                    'en': '\n\n✅ Buffered read complete!\nPerformance boost: 10-50x'
+                };
+                output.textContent = translations[currentLang] + fileContent + successMsg[currentLang];
+                output.className = 'demo-output animate__animated animate__fadeIn';
+            }, 100);
+        }
+
+        function clearDemo() {
+            const output = document.getElementById('output');
+            fileContent = "";
+            output.textContent = "";
+        }
+    </script>
+</body>
+</html>
