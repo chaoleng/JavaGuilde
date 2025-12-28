@@ -109,6 +109,11 @@ const translations = {
         tagVolatile: "volatile",
         tagJMM: "JMM",
 
+        // Index page - Difficulty and Status
+        difficulty: "难度",
+        statusInDevelopment: "开发中",
+        statusCompleted: "已完成",
+
         // Java Basics Page
         javaBasicsPageTitle: "Java基本知识",
         javaBasicsPageSubtitle: "学习Java编程基础",
@@ -386,6 +391,11 @@ const translations = {
         tagVolatile: "volatile",
         tagJMM: "JMM",
 
+        // Index page - Difficulty and Status
+        difficulty: "難易度",
+        statusInDevelopment: "開発中",
+        statusCompleted: "完了",
+
         // Java Basics Page
         javaBasicsPageTitle: "Java基本知識",
         javaBasicsPageSubtitle: "Javaプログラミングの基礎を学ぶ",
@@ -662,6 +672,11 @@ const translations = {
         tagSynchronized: "synchronized",
         tagVolatile: "volatile",
         tagJMM: "JMM",
+
+        // Index page - Difficulty and Status
+        difficulty: "Difficulty",
+        statusInDevelopment: "In Development",
+        statusCompleted: "Completed",
 
         // Java Basics Page
         javaBasicsPageTitle: "Java Fundamentals",
