@@ -1,0 +1,152 @@
+/* ========================================
+   Global Reset & Base Styles
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ========================================
+   Layout & Container
+   ======================================== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   Language Switcher Component
+   ======================================== */
+.language-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#language-selector {
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 2px solid white;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+#language-selector:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+#language-selector option {
+    background: #764ba2;
+    color: white;
+}
+
+/* ========================================
+   Back Button
+   ======================================== */
+.back-btn, .back-button {
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    margin-bottom: 30px;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+.back-btn:hover, .back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.back-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 30px 0;
+    font-weight: bold;
+}
+
+/* ========================================
+   Code Blocks
+   ======================================== */
+.code-block {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    margin: 15px 0;
+    font-size: 0.95em;
+    line-height: 1.4;
+    white-space: pre;
+    text-align: left;
+    overflow-x: auto;
+    tab-size: 4;
+    position: relative;
+}
+
+.code-block::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 0.75em;
+    color: #6272a4;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.keyword { color: #ff79c6; font-weight: bold; }
+.type { color: #8be9fd; }
+.method { color: #50fa7b; }
+.comment { color: #6272a4; font-style: italic; }
+.string { color: #f1fa8c; }
+.number { color: #bd93f9; }
+
+/* Prism.js code block styling */
+pre {
+    background: #2d2d2d;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+
+pre code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    line-height: 1.8;
+    text-align: left;
+}
+
+/* ========================================
+   Responsive Design - Mobile
+   ======================================== */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    header p {
+        font-size: 1.1em;
+    }
+
+    .container {
+        padding: 20px;
+    }
+}
