@@ -109,6 +109,38 @@ const translations = {
         tagVolatile: "volatile",
         tagJMM: "JMM",
 
+        // Web Development Series
+        webDevTitle: "Web开发技术系列",
+        webDevSubtitle: "前端·后端·数据库 · 面试对策完全指南",
+
+        htmlCss: "HTML/CSS基础",
+        htmlCssDesc: "HTML5、CSS3基础知识、布局技术、响应式设计、常见面试问题与解析",
+        tagHTML5: "HTML5",
+        tagCSS3: "CSS3",
+        tagFlexbox: "Flexbox",
+        tagGrid: "Grid",
+
+        jsJquery: "JavaScript/jQuery",
+        jsJqueryDesc: "JavaScript基础、ES6+新特性、DOM操作、事件处理、jQuery、面试问题与实践案例",
+        tagES6: "ES6+",
+        tagDOM: "DOM",
+        tagAsync: "异步",
+        tagjQuery: "jQuery",
+
+        mysql: "MySQL数据库",
+        mysqlDesc: "SQL基础、索引、事务、锁机制、性能优化、面试高频问题",
+        tagSQL: "SQL",
+        tagIndex: "索引",
+        tagTransaction: "事务",
+        tagOptimization: "优化",
+
+        server: "Apache/Nginx",
+        serverDesc: "Web服务器配置、反向代理、负载均衡、SSL/TLS、性能调优",
+        tagApache: "Apache",
+        tagNginx: "Nginx",
+        tagProxy: "代理",
+        tagLoadBalancing: "负载均衡",
+
         // Index page - Difficulty and Status
         difficulty: "难度",
         statusInDevelopment: "开发中",
@@ -391,6 +423,38 @@ const translations = {
         tagVolatile: "volatile",
         tagJMM: "JMM",
 
+        // Web Development Series
+        webDevTitle: "Web開発技術シリーズ",
+        webDevSubtitle: "フロントエンド・バックエンド・データベース · 面接対策完全ガイド",
+
+        htmlCss: "HTML/CSS基礎",
+        htmlCssDesc: "HTML5、CSS3の基礎知識、レイアウト技術、レスポンシブデザイン、よくある面接問題と解析",
+        tagHTML5: "HTML5",
+        tagCSS3: "CSS3",
+        tagFlexbox: "Flexbox",
+        tagGrid: "Grid",
+
+        jsJquery: "JavaScript/jQuery",
+        jsJqueryDesc: "JavaScript基礎、ES6+新機能、DOM操作、イベント処理、jQuery、面接問題と実践例",
+        tagES6: "ES6+",
+        tagDOM: "DOM",
+        tagAsync: "非同期",
+        tagjQuery: "jQuery",
+
+        mysql: "MySQLデータベース",
+        mysqlDesc: "SQL基礎、インデックス、トランザクション、ロック機構、パフォーマンス最適化、面接頻出問題",
+        tagSQL: "SQL",
+        tagIndex: "インデックス",
+        tagTransaction: "トランザクション",
+        tagOptimization: "最適化",
+
+        server: "Apache/Nginx",
+        serverDesc: "Webサーバー設定、リバースプロキシ、負荷分散、SSL/TLS、パフォーマンスチューニング",
+        tagApache: "Apache",
+        tagNginx: "Nginx",
+        tagProxy: "プロキシ",
+        tagLoadBalancing: "負荷分散",
+
         // Index page - Difficulty and Status
         difficulty: "難易度",
         statusInDevelopment: "開発中",
@@ -672,6 +736,38 @@ const translations = {
         tagSynchronized: "synchronized",
         tagVolatile: "volatile",
         tagJMM: "JMM",
+
+        // Web Development Series
+        webDevTitle: "Web Development Series",
+        webDevSubtitle: "Frontend · Backend · Database · Complete Interview Guide",
+
+        htmlCss: "HTML/CSS Basics",
+        htmlCssDesc: "HTML5, CSS3 fundamentals, layout techniques, responsive design, common interview questions and analysis",
+        tagHTML5: "HTML5",
+        tagCSS3: "CSS3",
+        tagFlexbox: "Flexbox",
+        tagGrid: "Grid",
+
+        jsJquery: "JavaScript/jQuery",
+        jsJqueryDesc: "JavaScript basics, ES6+ features, DOM manipulation, event handling, jQuery, interview questions and practical examples",
+        tagES6: "ES6+",
+        tagDOM: "DOM",
+        tagAsync: "Async",
+        tagjQuery: "jQuery",
+
+        mysql: "MySQL Database",
+        mysqlDesc: "SQL basics, indexes, transactions, locking mechanisms, performance optimization, frequently asked interview questions",
+        tagSQL: "SQL",
+        tagIndex: "Index",
+        tagTransaction: "Transaction",
+        tagOptimization: "Optimization",
+
+        server: "Apache/Nginx",
+        serverDesc: "Web server configuration, reverse proxy, load balancing, SSL/TLS, performance tuning",
+        tagApache: "Apache",
+        tagNginx: "Nginx",
+        tagProxy: "Proxy",
+        tagLoadBalancing: "Load Balancing",
 
         // Index page - Difficulty and Status
         difficulty: "Difficulty",
