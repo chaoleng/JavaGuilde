@@ -17,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
 
     <style>
         .interview-section {
@@ -483,6 +484,472 @@ p {
                     </div>
                 </div>
 
+            </div>
+
+            <!-- さらなる面接問題 -->
+            <div class="interview-section">
+                <div class="question">
+                    <span class="question-label">Q6</span>
+                    <h3>BFC（Block Formatting Context）とは何ですか？</h3>
+
+                    <div class="answer">
+                        <h4>📌 解答：</h4>
+                        <p><strong>BFC</strong>は独立したレンダリング領域で、内部の要素のレイアウトが外部に影響しません。</p>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 BFCを生成する方法：</h4>
+                        <ul>
+                            <li>float が none 以外</li>
+                            <li>position が absolute または fixed</li>
+                            <li>display が inline-block, flex, grid など</li>
+                            <li>overflow が visible 以外（hidden, auto, scroll）</li>
+                        </ul>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 BFCの特性と用途：</h4>
+                        <ul>
+                            <li><strong>マージンの相殺を防ぐ</strong>: 親子要素のマージンが重ならない</li>
+                            <li><strong>floatを含む</strong>: 親要素が子のfloat要素を包含</li>
+                            <li><strong>floatとの重なりを防ぐ</strong>: BFC要素はfloat要素の隣に配置</li>
+                        </ul>
+                    </div>
+
+                    <div class="markdown-body">
+                        <pre><code class="language-css">/* マージンの相殺を防ぐ */
+.parent {
+    overflow: hidden;  /* BFCを生成 */
+}
+
+.child {
+    margin-top: 20px;  /* 親のマージンと相殺されない */
+}
+
+/* floatを含む（clearfix代替）*/
+.container {
+    overflow: auto;  /* BFCを生成 */
+}
+
+.floated {
+    float: left;  /* 親要素に含まれる */
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <span class="question-label">Q7</span>
+                    <h3>CSS Spriteとは？そのメリットとデメリットは？</h3>
+
+                    <div class="answer">
+                        <h4>📌 解答：</h4>
+                        <p><strong>CSS Sprite</strong>は、複数の画像を1つの画像ファイルにまとめ、background-positionで表示位置を制御する技術です。</p>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 メリット：</h4>
+                        <ul>
+                            <li><strong>HTTPリクエスト数の削減</strong>: 読み込み速度が向上</li>
+                            <li><strong>画像管理の簡素化</strong>: 1ファイルで複数画像を管理</li>
+                            <li><strong>ホバー効果の高速化</strong>: 画像が既に読み込まれている</li>
+                        </ul>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 デメリット：</h4>
+                        <ul>
+                            <li>メンテナンスが複雑（位置計算が必要）</li>
+                            <li>レスポンシブ対応が困難</li>
+                            <li>画像の一部変更で全体を再作成</li>
+                            <li>HTTP/2環境では効果が薄い</li>
+                        </ul>
+                    </div>
+
+                    <div class="markdown-body">
+                        <pre><code class="language-css">/* CSS Spriteの例 */
+.icon {
+    background-image: url('sprite.png');
+    width: 32px;
+    height: 32px;
+}
+
+.icon-home {
+    background-position: 0 0;
+}
+
+.icon-search {
+    background-position: -32px 0;
+}
+
+.icon-user {
+    background-position: -64px 0;
+}
+
+/* 現代的な代替: SVG Sprite */
+.svg-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.svg-icon use {
+    pointer-events: none;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <span class="question-label">Q8</span>
+                    <h3>z-indexが効かない場合の原因と解決方法は？</h3>
+
+                    <div class="answer">
+                        <h4>📌 解答：</h4>
+                        <p><strong>z-index</strong>は、positionプロパティがstatic以外の要素にのみ適用されます。</p>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 z-indexが効かない主な原因：</h4>
+                        <ul>
+                            <li><strong>position: static</strong>（デフォルト値）の場合</li>
+                            <li><strong>スタッキングコンテキスト</strong>の理解不足</li>
+                            <li><strong>親要素のz-index</strong>の影響</li>
+                            <li><strong>transform, opacity, filter</strong>などで新しいスタッキングコンテキストが生成される</li>
+                        </ul>
+                    </div>
+
+                    <div class="markdown-body">
+                        <pre><code class="language-css">/* ❌ 効かない例 */
+.element1 {
+    z-index: 100;  /* position: static なので無効 */
+}
+
+/* ✅ 正しい例 */
+.element2 {
+    position: relative;  /* または absolute, fixed, sticky */
+    z-index: 100;
+}
+
+/* スタッキングコンテキストの例 */
+.parent {
+    position: relative;
+    z-index: 1;
+}
+
+.child {
+    position: absolute;
+    z-index: 9999;  /* 親のz-index: 1の範囲内でのみ有効 */
+}
+
+/* 別の親 */
+.other-parent {
+    position: relative;
+    z-index: 2;  /* この親の子要素は .child より上に表示される */
+}
+
+/* transform による新しいスタッキングコンテキスト */
+.transformed {
+    transform: translateZ(0);  /* 新しいスタッキングコンテキストを生成 */
+    z-index: 1;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <span class="question-label">Q9</span>
+                    <h3>CSSの単位（px, em, rem, %, vw/vh）の違いと使い分けは？</h3>
+
+                    <div class="answer">
+                        <h4>📌 解答：</h4>
+                        <p>CSS単位は絶対単位と相対単位に分類され、それぞれ異なる用途があります。</p>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 絶対単位：</h4>
+                        <ul>
+                            <li><strong>px</strong>: ピクセル。固定サイズ。境界線、影などに使用</li>
+                        </ul>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 相対単位：</h4>
+                        <ul>
+                            <li><strong>em</strong>: 親要素のfont-sizeに対する倍率。入れ子で増幅される</li>
+                            <li><strong>rem</strong>: ルート要素（html）のfont-sizeに対する倍率。推奨</li>
+                            <li><strong>%</strong>: 親要素に対する割合。width/heightなどに使用</li>
+                            <li><strong>vw/vh</strong>: ビューポート幅/高さの1%。フルスクリーン要素に</li>
+                            <li><strong>vmin/vmax</strong>: vwとvhの小さい方/大きい方</li>
+                        </ul>
+                    </div>
+
+                    <div class="markdown-body">
+                        <pre><code class="language-css">/* 単位の比較と使い分け */
+
+/* px: 固定サイズ */
+.border {
+    border: 1px solid black;  /* 境界線は px が適切 */
+}
+
+/* em: 親要素に依存（入れ子で増幅） */
+.parent {
+    font-size: 16px;
+}
+
+.child {
+    font-size: 1.5em;  /* 16px × 1.5 = 24px */
+    padding: 1em;      /* 24px（自身のfont-size） */
+}
+
+/* rem: ルート要素に依存（推奨）*/
+html {
+    font-size: 16px;  /* 基準サイズ */
+}
+
+.element {
+    font-size: 1.5rem;    /* 16px × 1.5 = 24px */
+    margin-bottom: 2rem;  /* 16px × 2 = 32px */
+    padding: 1rem;        /* 16px */
+}
+
+/* %: 親要素に対する割合 */
+.container {
+    width: 1200px;
+}
+
+.content {
+    width: 80%;  /* 1200px × 0.8 = 960px */
+}
+
+/* vw/vh: ビューポートサイズ */
+.fullscreen {
+    width: 100vw;   /* ビューポート幅の100% */
+    height: 100vh;  /* ビューポート高さの100% */
+}
+
+.hero {
+    font-size: 5vw;  /* レスポンシブなフォントサイズ */
+}
+
+/* レスポンシブなフォントサイズ（clamp使用）*/
+.responsive-text {
+    font-size: clamp(1rem, 2.5vw, 2rem);
+    /* 最小1rem、推奨2.5vw、最大2rem */
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <span class="question-label">Q10</span>
+                    <h3>CSSアニメーションとJavaScriptアニメーションの違いと使い分けは？</h3>
+
+                    <div class="answer">
+                        <h4>📌 解答：</h4>
+                        <p>CSSアニメーションとJavaScriptアニメーションにはそれぞれ利点があり、用途に応じて使い分けます。</p>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 CSSアニメーションの特徴：</h4>
+                        <ul>
+                            <li><strong>パフォーマンス良好</strong>: GPUアクセラレーション対応</li>
+                            <li><strong>シンプル</strong>: 宣言的で書きやすい</li>
+                            <li><strong>メインスレッドを占有しない</strong></li>
+                            <li><strong>限定的な制御</strong>: 複雑なロジックは困難</li>
+                        </ul>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 JavaScriptアニメーションの特徴：</h4>
+                        <ul>
+                            <li><strong>柔軟性が高い</strong>: 複雑なアニメーション可能</li>
+                            <li><strong>細かい制御</strong>: タイミング、条件分岐など</li>
+                            <li><strong>インタラクティブ</strong>: ユーザー入力に即座に反応</li>
+                            <li><strong>パフォーマンス注意</strong>: 最適化が必要</li>
+                        </ul>
+                    </div>
+
+                    <div class="markdown-body">
+                        <pre><code class="language-css">/* CSSアニメーション: シンプルな動き */
+
+/* transition: プロパティ変化時 */
+.button {
+    background-color: blue;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: red;
+}
+
+/* animation: キーフレーム */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.element {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* GPUアクセラレーション対応プロパティ */
+.gpu-accelerated {
+    /* ✅ 高速: transform, opacity */
+    transform: translateX(100px);
+    opacity: 0.5;
+
+    /* ❌ 低速: left, top, width, height */
+    /* left: 100px; */
+}</code></pre>
+                    </div>
+
+                    <div class="markdown-body">
+                        <pre><code class="language-javascript">// JavaScriptアニメーション: 複雑な制御
+
+// requestAnimationFrame使用
+function animate(element) {
+    let start = null;
+    const duration = 1000;
+
+    function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = (timestamp - start) / duration;
+
+        if (progress < 1) {
+            // イージング関数適用
+            const eased = easeOutCubic(progress);
+            element.style.transform = `translateX(${eased * 300}px)`;
+            requestAnimationFrame(step);
+        } else {
+            element.style.transform = 'translateX(300px)';
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+// イージング関数
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+// Web Animations API（モダンな方法）
+element.animate([
+    { transform: 'translateX(0px)', opacity: 0 },
+    { transform: 'translateX(300px)', opacity: 1 }
+], {
+    duration: 1000,
+    easing: 'ease-out',
+    fill: 'forwards'
+});</code></pre>
+                    </div>
+
+                    <div class="key-points">
+                        <h4>🎯 使い分けガイド：</h4>
+                        <ul>
+                            <li><strong>CSSを使う</strong>: ホバー効果、シンプルなトランジション、ローディングアニメーション</li>
+                            <li><strong>JavaScriptを使う</strong>: ゲーム、複雑なインタラクション、物理シミュレーション、条件付きアニメーション</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- HTML5の重要な知識 -->
+            <h2 class="section-title">📚 HTML5の重要な知識</h2>
+
+            <div class="concept-card">
+                <h3>1. ローカルストレージ（localStorage / sessionStorage）</h3>
+                <p>クライアント側でデータを永続的または一時的に保存する仕組み。</p>
+            </div>
+
+            <div class="markdown-body">
+                <pre><code class="language-javascript">// localStorage: 永続的（ブラウザを閉じても残る）
+localStorage.setItem('username', 'John');
+const username = localStorage.getItem('username');
+localStorage.removeItem('username');
+localStorage.clear();  // 全削除
+
+// sessionStorage: 一時的（タブを閉じると削除）
+sessionStorage.setItem('token', 'abc123');
+const token = sessionStorage.getItem('token');
+
+// 違い:
+// - localStorage: 期限なし、同じオリジンで共有
+// - sessionStorage: タブ/ウィンドウ単位、閉じると削除
+// - Cookie: サーバーに送信、有効期限設定可能、容量小（4KB）</code></pre>
+            </div>
+
+            <div class="concept-card">
+                <h3>2. Canvas API と SVG の違い</h3>
+                <p>2つのグラフィックス技術の特徴と使い分け。</p>
+            </div>
+
+            <div class="key-points">
+                <h4>🎯 Canvas（ビットマップベース）：</h4>
+                <ul>
+                    <li>JavaScriptで描画（ピクセル操作）</li>
+                    <li>ゲーム、グラフ、画像編集に適している</li>
+                    <li>拡大すると画質が劣化</li>
+                    <li>イベントハンドラーは自分で実装</li>
+                </ul>
+            </div>
+
+            <div class="key-points">
+                <h4>🎯 SVG（ベクターベース）：</h4>
+                <ul>
+                    <li>XMLベースのマークアップ</li>
+                    <li>アイコン、ロゴ、図形に適している</li>
+                    <li>拡大しても画質が維持される</li>
+                    <li>DOM要素として操作可能、CSSでスタイル可能</li>
+                </ul>
+            </div>
+
+            <div class="concept-card">
+                <h3>3. Webアクセシビリティ（a11y）</h3>
+                <p>すべてのユーザーがWebサイトを利用できるようにする重要な概念。</p>
+            </div>
+
+            <div class="key-points">
+                <h4>🎯 重要なアクセシビリティ対応：</h4>
+                <ul>
+                    <li><strong>セマンティックHTML</strong>: 適切なタグを使用（nav, article, aside など）</li>
+                    <li><strong>ARIA属性</strong>: スクリーンリーダー向けの情報（role, aria-label など）</li>
+                    <li><strong>キーボード操作</strong>: タブキーで全要素にアクセス可能に</li>
+                    <li><strong>色のコントラスト</strong>: WCAG基準（AA: 4.5:1, AAA: 7:1）</li>
+                    <li><strong>代替テキスト</strong>: 画像にalt属性を必ず設定</li>
+                </ul>
+            </div>
+
+            <div class="markdown-body">
+                <pre><code class="language-markup">&lt;!-- アクセシビリティの良い例 --&gt;
+
+&lt;!-- セマンティックHTML --&gt;
+&lt;nav aria-label="メインナビゲーション"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;ホーム&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+
+&lt;!-- ARIA属性 --&gt;
+&lt;button aria-label="メニューを開く" aria-expanded="false"&gt;
+    &lt;span aria-hidden="true"&gt;☰&lt;/span&gt;
+&lt;/button&gt;
+
+&lt;!-- 画像の代替テキスト --&gt;
+&lt;img src="logo.png" alt="会社ロゴ"&gt;
+
+&lt;!-- 装飾画像 --&gt;
+&lt;img src="decoration.png" alt="" role="presentation"&gt;
+
+&lt;!-- フォームラベル --&gt;
+&lt;label for="email"&gt;メールアドレス&lt;/label&gt;
+&lt;input type="email" id="email" required
+       aria-describedby="email-hint"&gt;
+&lt;span id="email-hint"&gt;例: user@example.com&lt;/span&gt;</code></pre>
             </div>
 
             <!-- 重要なポイント -->
